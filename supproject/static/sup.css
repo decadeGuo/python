@@ -1,0 +1,101 @@
+#title{
+    text-align: center;
+    font-size: 3rem;
+    margin-top: 20px;
+}
+.auther{font-size: 2rem;color: grey}
+.guanggao_left{
+    font-size: 3rem;
+    position: absolute;
+    top:150px;
+    left: 100px;
+    text-align: center;
+}
+.guanggao_right{
+    font-size: 3rem;
+    position: absolute;
+    top:150px;
+    right: 100px;
+    text-align: center;
+}
+#content{
+    width: 1000px;
+    height: 600px;
+    /*border: 1px solid red;*/
+    margin-left: 400px;
+    position: relative;
+}
+.money{
+    width: 200px;
+    height: 200px;
+}
+.gif{
+    width: 250px;
+    height: 200px;
+    margin-top: 5px;
+}
+.wenzi{
+    text-align: center;
+    font-size: 2rem;
+    margin-top: 35px;
+}
+.rem{
+   font-size: 2rem;
+  }
+.m-l{margin-left: 50px;}
+.error{
+    margin-left: 150px;
+    color: red;
+}
+.a-title{
+    font-size: 2rem;
+    margin-top: 50px;
+    margin-left: 50px;
+}
+.a-auth{
+    font-size: 2.5rem;
+    color: darkmagenta;
+}
+.out{
+    position: absolute;
+    right: 50px;
+}
+#a-content{
+    border: 1px solid darkgray;
+    border-radius: 10px;
+    height: 600px;
+    position: relative;
+    box-shadow: grey 2px 2px;
+}
+#a-content-left{
+    border-right: 1px solid darkgray;
+    width:20%;
+    height: 600px;
+}
+#a-content-right{
+    position:absolute;
+    top: 0;
+    right: 0;
+    width:80%;
+    height: 600px;
+    padding-top: 20px;
+    padding-left: 20px;
+}
+.a-content-left:hover{
+    background-color: gray;
+    color: white;
+}
+.a-content-left{
+    font-size: 2rem;
+    height: 60px;
+    text-align: center;
+    line-height: 60px;
+    cursor: pointer;
+}
+.hid{
+    background-color: gray;
+    color: white;
+}
+.tishi{
+    color: dodgerblue;
+}

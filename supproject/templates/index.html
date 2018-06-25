@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+{% load staticfiles %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>优鸿教育项目辅助工具</title>
+    <link rel="icon" href={% static 'imgs/logo.png' %} type="image/x-icon"/>
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.bootcss.com/jquery/2.1.1/jquery.min.js"></script>
+    <script src="https://cdn.bootcss.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <link href={% static 'sup.css' %} rel="stylesheet">
+</head>
+<body>
+<header id="title"><img src={% static 'imgs/huaji.png' %}>优鸿教育同步项目辅助脚本外挂<img src={% static 'imgs/huaji.png' %}><br>
+    <span class="auther">作者:秋名山车神(内部人员专用)</span> <span class="auther">适用项目：预科以后且有作者参与开发的项目</span>
+</header>
+<div class="guanggao_left">
+    <img class="money" src={% static 'imgs/money.png' %} alt="">
+    <p style="font-size: 1.5rem;color: blue">扫描二维码打赏作者</p>
+    <p class="article"> 车神寄语 <br>
+        秋名山上常人稀，<br>
+        常有车手辨高低。<br>
+        如今道路依常在，<br>
+        不见当年老司机。
+    </p>
+    <img class="gif" src={% static 'imgs/zq.gif' %}>
+</div>
+<div class="guanggao_right">
+    <img class="money" src={% static 'imgs/money.png' %} alt="">
+    <p style="font-size: 1.5rem;color: blue">扫描二维码打赏作者</p>
+    <img class="gif" src={% static 'imgs/cat.gif' %}><br>
+    <img class="gif" src={% static 'imgs/zq1.gif' %}>
+</div>
+<div id="content">
+    {% block auth %}
+        <p class="wenzi">内部身份验证</p>
+        <p class="wenzi">扫描二维码打赏可联系作者获取本站会员<br>会员可免广告可体验额外功能</p>
+        <form class="form-horizontal" role="form" style="margin-left: 150px;margin-top: 80px;"
+              method="post" action="/login/">
+            {% csrf_token %}
+            <div class="form-group">
+                <label for="firstname" class="col-sm-2 control-label">身份</label>
+                <div class="col-sm-6">
+                    <label class="radio-inline">
+                        <input type="radio" name="type" id="optionsRadios4" value="1" checked> 学生
+                    </label>
+                    <label class="radio-inline">
+                        <input type="radio" name="type" id="optionsRadios4" value="3"> 老师
+                    </label>
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="firstname" class="col-sm-2 control-label">账户</label>
+                <div class="col-sm-6">
+                    <input type="text" class="form-control" name="username" id="firstname" placeholder="请输入账号">
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="lastname" class="col-sm-2 control-label">密码</label>
+                <div class="col-sm-6">
+                    <input type="password" class="form-control" name="password" id="lastname" placeholder="请输入密码">
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-offset-2 col-sm-6">
+                    <button data-target="#myModal" data-toggle="modal" type="button" class="btn btn-default">登录</button>
+                </div>
+            </div>
+            {% if error %}
+                <div class="error">{{ error }}</div>
+            {% endif %}
+            <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+                 aria-hidden="true" style="margin-top: 200px">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                            <h4 class="modal-title" id="myModalLabel">打赏一下吧！！！</h4>
+                        </div>
+                        <div style="text-align: center"><img class="money" src={% static 'imgs/money.png' %} alt="">
+                        </div>
+
+                        <div class="modal-footer center" style="text-align: center">
+                            <button type="submit" class="btn btn-primary">打赏完毕</button>
+                        </div>
+                    </div><!-- /.modal-content -->
+                </div><!-- /.modal -->
+            </div>
+        </form>
+
+    {% endblock %}
+
+</div>
+</body>
+</html>

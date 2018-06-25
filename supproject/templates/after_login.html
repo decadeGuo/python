@@ -1,0 +1,140 @@
+{% extends 'index.html' %}
+{% load static %}
+{% block auth %}
+    <p class="out"><a href="/index/" style="margin-right: 50px">刷新</a><a href="/logout/">退出登录</a></p>
+    {% if type == 1 %}
+        <p class="a-title">亲爱的<span class="a-auth">{{ user.first_name }}</span>同学！</p>
+        <div id="a-content">
+            <div id="a-content-left">
+                <div class="a-content-left">基本信息</div>
+                <div class="a-content-left">绑定微信</div>
+                <div class="a-content-left">修改经验</div>
+                <div class="a-content-left">清除数据</div>
+                <div class="a-content-left">抹除数据</div>
+            </div>
+            <div id="a-content-right">
+
+            </div>
+        </div>
+    {% else %}
+        <p class="a-title">尊敬的<span class="a-auth">{{ user.first_name }}</span>老师！</p>
+        <div id="a-content">
+            <div id="a-content-left">
+                <div class="a-content-left hid" name="base-info">基本信息</div>
+                <div class="a-content-left" name="get-zige">获取督导资格</div>
+                <div class="a-content-left" name="more">更多功能...</div>
+            </div>
+            <div id="a-content-right">
+                <div class="base-info zz">
+                    <p><span class="rem">教师ID：<span class="tishi">{{ user.id }}</span></span></p>
+                    <p>
+                        <span class="rem">管理班级(cls_id)：</span><br>
+                        {% for o in cls_info %}
+                            <span class="rem m-l" style="color: dodgerblue">{{ o.name }}({{ o.id }})</span>
+                        {% endfor %}
+                    </p>
+                    <p>
+                        <span class="rem">当前督导资格：</span><br>
+                        {% for o in pro_info %}
+                            {% if o.status == 1 %}
+                                <p class="rem m-l"
+                                   style="color: dodgerblue">{{ o.project_name }}({{ o.project_id }}):有</p>
+                            {% else %}
+                                <p class="rem m-l" style="color: grey">{{ o.project_name }}({{ o.project_id }}):无</p>
+                            {% endif %}
+                        {% endfor %}
+                    </p>
+                </div>
+                <div class="get-zige zz" style="display: none">
+                    <p><span class="rem">未通过培训的科目：</span></p>
+                    {% if not need %}
+                        <p><span class="rem m-l tishi">您目前没有需要获取督导资格的科目！</span></p>
+                    {% else %}
+                        {% for o in need %}
+                            <p><span class="rem m-l tishi">{{ o.name }}</span>
+                                <button id="{{ o.id }}" type="button"
+                                        class="btn btn-primary pass" style="margin-left: 20%">点我通过培训
+                                </button>
+                                <button type="button"
+                                        class="btn btn-disabled" disabled style="margin-left: 20%">反向功能
+                                </button>
+                            </p>
+                        {% endfor %}
+                    {% endif %}
+                    <p><span class="rem">已培训完成的科目：</span></p>
+                    {% if not already_info %}
+                            <p><span class="rem m-l tishi">您目前没有已获取督导资格的科目！</span></p>
+                        {% else %}
+                            {% for o in already_info %}
+                                <p><span class="rem m-l tishi">{{ o.project_name }}</span>
+                                    <button type="button"
+                                            class="btn btn-disabled" disabled style="margin-left: 20%">点我通过培训
+                                    </button>
+                                    <button id="{{ o.project_id }}" type="button"
+                                            class="btn btn-primary pass1"  style="margin-left: 20%">反向功能
+                                    </button>
+                                </p>
+                            {% endfor %}
+                        {% endif %}
+                </div>
+                <div class="more zz" style="display: none">
+                    <p><span class="rem">更多功能敬请期待！！！</span></p>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+    <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+         aria-hidden="true" style="margin-top: 200px">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title" id="myModalLabel"><img src="{% static 'imgs/dashang.png' %}">打赏一下吧！！！<img src="{% static 'imgs/dashang.png' %}"></h4>
+                </div>
+                <div style="text-align: center"><img class="money" src={% static 'imgs/money.png' %} alt="">
+                </div>
+
+                <div class="modal-footer center" style="text-align: center">
+                    <button type="button" n-type="{{ type }}" class="btn btn-success">打赏完毕</button>
+                </div>
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal data-target="#myModal" data-toggle="modal" -->
+    </div>
+    <script>
+        $('.a-content-left').each(function () {
+            $(this).click(function () {
+                $('.a-content-left').removeClass('hid');
+                $(this).addClass('hid');
+                var name = $(this).attr('name');
+                $('.zz').css('display', 'none');
+                $('.' + name).css('display', 'block')
+            })
+        });
+        $('.pass').click(function () {
+            var id = $(this).attr('id');
+            settings = {
+                url:"/update/dudao/",
+                type:"get",
+                data:{"project_id":id,"type":1},
+                success:function (result) {
+                    alert('恭喜你，培训完成！');
+                    window.location.reload()
+                }
+            };
+            $.ajax(settings)
+        });
+        $('.pass1').click(function () {
+            var id = $(this).attr('id');
+            settings = {
+                url:"/update/dudao/",
+                type:"get",
+                data:{"project_id":id,"type":2},
+                success:function (result) {
+                    alert('恭喜你，取消培训完成！');
+                    window.location.reload()
+                }
+            };
+            $.ajax(settings)
+        })
+    </script>
+{% endblock %}
