@@ -62,6 +62,34 @@ class SchoolClass(models.Model):
 
     class Meta:
         db_table = 'yh_class'
+class UserBook(models.Model):
+    """
+    功能说明：用户购买教材表
+    ----------------------------------------
+    修改人     修改时间        修改原因
+    ----------------------------------------
+    张豪飞    2017－03－02
+    ==============================================================
+    project_last_update：项目教材最后使用时间， 点名更新该字段, 首页获取用户教材，生成个性化作业会根据用户最后使用的教材来生成
+
+    """
+    TYPE_CHOICES = (
+        (0, u'无'),
+        (1, u'预习模式:先学后测'),
+        (2, u'复习模式:先测后学')
+    )
+    STATUS_CHOICES = (
+        (-1, u'教材已删除'),
+        (0, u'教材过期，不可用'),
+        (1, u'可用')
+    )
+    user = models.ForeignKey(User)
+    book_id = models.IntegerField(u"教材ID", default=0)  # 不同科目教材表不同(同一教材不同type算两本不同教材两条记录)
+    status = models.IntegerField(u'状态')  # 1：可用(已缴费)  0:不可用(未交费) 2:交费到期  -1 已删除
+    project = models.ForeignKey(Project, verbose_name=u"优佳项目ID")  # 当前教材所属科目（作为教材的属性，非限制字段）
+
+    class Meta:
+        db_table = 'yh_user_book'
 
 class UserBookClass(models.Model):
     """
@@ -90,8 +118,7 @@ class UserBookClass(models.Model):
     user = models.ForeignKey(User)
     user_type = models.IntegerField(u'用户类型')  # １学生 3教师(教师没有教材)
     cls = models.ForeignKey(SchoolClass, verbose_name=u"班级ID")  # 班级
-
-
+    user_book = models.ForeignKey(UserBook, null=True)
     is_new = models.IntegerField(u"是否是新生", default=1)  # 0 不是 1 是
     temp_class_id = models.IntegerField(u"临时上课班级", default=0)  # 点名更新该字段
     temp_update_time = models.IntegerField(u"临时调班的时间", default=0)

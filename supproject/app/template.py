@@ -1,8 +1,9 @@
 # coding:utf-8
 from django.shortcuts import render
 
-from core.common import Struct, fetchall_to_many
-from models.gg.model import UserBookClass, SchoolClass, Project, TeacherProject
+from core.common import Struct, fetchall_to_many, get_stu_level, get_stu_current
+from models.gg.model import UserBookClass, SchoolClass, Project, TeacherProject, YhWeixinBind
+from supproject.settings import DB_NAME
 
 
 def index(request):
@@ -49,19 +50,56 @@ def after_login(request):
         ],
         already_pass:[已完成的]
     }
+    学生返回：
+    data:{
+        is_weixin:1,
+        pro_info:[
+            {   
+                p_id:11,
+                p_name:llll
+                exp:1234,
+                level:6,
+                honer:学渣,
+                book:初中九上,
+                cls:{id:1,name:班级}
+                current:{c_name:第一节,c_id:1,level:4}
+            }
+        ]    
+    }
     
     """
     type = request.session.get('log')
-
+    uid = request.uid
+    p_ids = [int(o.get('p_id')) for o in DB_NAME]
     if int(type) == 1:
-        pass
-
+        is_weinxin = u'已绑定' if YhWeixinBind.objects.filter(user_id=uid,status=1).exists() else u'未绑定'
+        user_book = UserBookClass.objects.filter(user_id=uid,user_book__project_id__in=p_ids)
+        cls_ids = [int(o.cls_id) for o in user_book]
+        cls_info = SchoolClass.objects.filter(pk__in=cls_ids).values("id", "name")
+        pro_info = []
+        exp_info = []
+        for o in user_book:
+            row = Struct()
+            row.p_id = o.user_book.project_id
+            row.p_name = o.user_book.project.name
+            row.exp,row.level,row.honer = get_stu_level(uid,row.p_id)
+            exp_info.append(row)
+            row.book = u"ID:%s" % o.user_book_id
+            k = next(i for i in cls_info if o.cls_id == int(i.get('id')))
+            row.cls = dict(id=k.get('id'),name=k.get('name'))
+            row.current = get_stu_current(uid,row.p_id)
+            pro_info.append(row)
+        data = dict(
+            type=int(type),
+            is_weinxin=is_weinxin,
+            pro_info=pro_info,
+            exp_info=exp_info
+        )
     else:  # 教师信息
-        uid = request.uid
         # 改教师名下所有的班级
         cls_ids = UserBookClass.objects.filter(user_id=uid, user_type=type).values_list("cls_id", flat=True)
         cls_info = SchoolClass.objects.filter(pk__in=cls_ids).values("id", "name")
-        all_project = Project.objects.filter(id__gte=11).values("id", "name").order_by("id")
+        all_project = Project.objects.filter(id__in=p_ids).values("id", "name").order_by("id")
         pro_info = []
         already_pass = []
         already_info = []

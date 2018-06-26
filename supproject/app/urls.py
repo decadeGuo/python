@@ -4,7 +4,8 @@ from django.conf.urls import url
 import index
 
 urlpatterns = [
-    url(r'^dudao/$', index.dudao),  # 检测更新
+    url(r'^dudao/$', index.dudao),  # 获取督导资格
+    url(r'^weixin/$',index.weixin)
 ]
 
 urlpatterns += [

@@ -11,11 +11,17 @@
     <link href={% static 'sup.css' %} rel="stylesheet">
 </head>
 <body>
-<header id="title"><img src={% static 'imgs/huaji.png' %}>优鸿教育同步项目辅助脚本外挂<img src={% static 'imgs/huaji.png' %}><br>
+<div style="position:absolute;top: 30px;left: 100px;">
+    <button id="close" class="btn btn-info">关闭本页面广告</button>
+    <br>
+    <span>功能说明：<br>教师端：提供快速通过培训<br>学生端：自己登陆体验，点击没有反应的说明还未完成</span>
+</div>
+
+<header id="title"><img src={% static 'imgs/huaji.png' %}>优鸿教育项目辅助工具<img src={% static 'imgs/huaji.png' %}><br>
     <span class="auther">作者:秋名山车神(内部人员专用)</span> <span class="auther">适用项目：预科以后且有作者参与开发的项目</span>
 </header>
 <div class="guanggao_left">
-    <img class="money" src={% static 'imgs/money.png' %} alt="">
+    <img class="money" src={% static 'imgs/money.png' %}>
     <p style="font-size: 1.5rem;color: blue">扫描二维码打赏作者</p>
     <p class="article"> 车神寄语 <br>
         秋名山上常人稀，<br>
@@ -26,8 +32,7 @@
     <img class="gif" src={% static 'imgs/zq.gif' %}>
 </div>
 <div class="guanggao_right">
-    <img class="money" src={% static 'imgs/money.png' %} alt="">
-    <p style="font-size: 1.5rem;color: blue">扫描二维码打赏作者</p>
+    <p class="gif" style="height: 228px;text-align: center;line-height: 228px;color: red">广告位招商</p>
     <img class="gif" src={% static 'imgs/cat.gif' %}><br>
     <img class="gif" src={% static 'imgs/zq1.gif' %}>
 </div>
@@ -52,13 +57,13 @@
             <div class="form-group">
                 <label for="firstname" class="col-sm-2 control-label">账户</label>
                 <div class="col-sm-6">
-                    <input type="text" class="form-control" name="username" id="firstname" placeholder="请输入账号">
+                    <input type="text" class="form-control" required name="username" id="firstname" placeholder="请输入账号">
                 </div>
             </div>
             <div class="form-group">
                 <label for="lastname" class="col-sm-2 control-label">密码</label>
                 <div class="col-sm-6">
-                    <input type="password" class="form-control" name="password" id="lastname" placeholder="请输入密码">
+                    <input type="password" class="form-control" required name="password" id="lastname" placeholder="请输入密码">
                 </div>
             </div>
             <div class="form-group">
@@ -75,7 +80,7 @@
                     <div class="modal-content">
                         <div class="modal-header">
                             <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                            <h4 class="modal-title" id="myModalLabel">打赏一下吧！！！</h4>
+                            <h4 class="modal-title" id="myModalLabel"><img src="{% static 'imgs/dashang.png' %}">打赏一下吧！！！<img src="{% static 'imgs/dashang.png' %}"></h4>
                         </div>
                         <div style="text-align: center"><img class="money" src={% static 'imgs/money.png' %} alt="">
                         </div>
@@ -87,9 +92,14 @@
                 </div><!-- /.modal -->
             </div>
         </form>
-
     {% endblock %}
-
 </div>
+<script>
+    $('#close').click(function () {
+        alert("去广告测试\n尊贵的VIP会员，即将为您去掉广告");
+        $('.guanggao_left,.guanggao_right').css("display","none");
+        $(this).text('已关毕')
+    })
+</script>
 </body>
 </html>

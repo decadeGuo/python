@@ -1,4 +1,4 @@
-#coding:utf-8
+# coding:utf-8
 """
 Django settings for supproject project.
 
@@ -13,9 +13,9 @@ https://docs.djangoproject.com/en/1.11/ref/settings/
 
 import os
 import json
+
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-
 
 CONFIG_FILE = os.path.join(BASE_DIR, '.env')
 CONFIG_INFO = {}
@@ -37,7 +37,12 @@ DEBUG = True
 
 ALLOWED_HOSTS = ['*']
 
-
+# 支持的项目和对应57数据库   57数据库采用sql语句脚本执行
+DB_NAME = [
+    {"p_id": 11, "db_name": "yh_yk_sx2"},
+    {"p_id": 12, "db_name": "yh_yk_wl2"},
+    {"p_id": 13, "db_name": "yh_yk_hx2"}
+]
 # Application definition
 
 INSTALLED_APPS = [
@@ -98,7 +103,6 @@ DATABASES = {
     },
 }
 
-
 # Password validation
 # https://docs.djangoproject.com/en/1.11/ref/settings/#auth-password-validators
 
@@ -116,7 +120,6 @@ AUTH_PASSWORD_VALIDATORS = [
         'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
     },
 ]
-
 
 # Internationalization
 # https://docs.djangoproject.com/en/1.11/topics/i18n/

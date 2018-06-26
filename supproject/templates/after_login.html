@@ -6,16 +6,118 @@
         <p class="a-title">亲爱的<span class="a-auth">{{ user.first_name }}</span>同学！</p>
         <div id="a-content">
             <div id="a-content-left">
-                <div class="a-content-left">基本信息</div>
-                <div class="a-content-left">绑定微信</div>
-                <div class="a-content-left">修改经验</div>
+                <div class="a-content-left hid" name="base-info">基本信息</div>
+                <div class="a-content-left" name="weixin">绑定微信</div>
+                <div class="a-content-left" name="exp">修改经验</div>
                 <div class="a-content-left">清除数据</div>
                 <div class="a-content-left">抹除数据</div>
             </div>
             <div id="a-content-right">
-
+                <div class="base-info zz">
+                    <p><span class="rem">************通用信息************</span></p>
+                    <p><span class="rem">学生ID：<span class="tishi">{{ user.id }}</span></span></p>
+                    <p><span class="rem">是否绑定微信：<span class="tishi">{{ is_weinxin }}</span></span></p><br>
+                    <p><span class="rem">************科目信息************</span></p>
+                    <ul id="myTab" class="nav">
+                        <li class="dropdown">
+                            <button id="myTabDrop1" class="btn btn-default dropdown-toggle rem"
+                                    data-toggle="dropdown"><span id="dropdown">请点击选择</span>
+                                <b class="caret"></b></button>
+                            <span class="m-l"><span class="glyphicon glyphicon-hand-left"></span>点击左边按钮查看不同项目</span>
+                            <ul class="dropdown-menu" role="menu" aria-labelledby="myTabDrop1">
+                                {% for o in pro_info %}
+                                <li><a href="#{{ o.p_id }}" tabindex="-1" data-toggle="tab">{{ o.p_name }}</a></li>
+                                {% endfor %}
+                            </ul>
+                        </li>
+                    </ul>
+                    <div id="myTabContent" class="tab-content">
+                        {% for o in pro_info %}
+                        <div class="tab-pane fade" id="{{ o.p_id }}">
+                            <p style="margin-top: 20px;"><span class="rem">头像：<span class="tishi">暂不支持</span></span></p>
+                            <p><span class="rem">当前经验值：<span class="tishi">{{ o.exp }}</span>
+                                            <span class="m-l">等级：</span><span class="tishi">{{ o.level }}</span>
+                                            <span class="m-l">称号：</span><span class="tishi">{{ o.honer }}</span>
+                                        </span></p>
+                            <p><span class="rem">当前教材：<span class="tishi">{{ o.book }}</span></span></p>
+                            <p><span class="rem">当前班级：<span class="tishi">{{ o.cls.name }}({{ o.cls.id }})</span></span></p>
+                            <p><span class="rem">当前课时：<span class="tishi">{{ o.current.c_name }}({{ o.current.c_id }})</span></span></p>
+                            <p><span class="rem">当前关卡：<span class="tishi">{{ o.current.level }}</span></span></p>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                <div class="weixin zz" style="display: none">
+                    <p><span class="rem">微信绑定、解绑、更换用户：</span></p>
+                    <p><span class="rem">当前状态：<span class="tishi">{{ is_weinxin }}</span></span>
+                        <button name="1" class="btn btn-info open-sub" style="margin-left: 20%">解绑</button></p>
+                    <p><span class="rem">微信绑定流程：</span></p>
+                    <p class="m-l rem">1、绑定优鸿教育微信公众号 <br>
+                        <img class="money" src="{% static 'imgs/yh_weixin.jpg' %}" style="margin-left: 30px;">
+                        <br>2、向系统发送“//openid”，等待系统返回字符串
+                    <br>3、将返回的字符串粘贴到下面的输入框内，点击提交即可。
+                    </p>
+                    <p class="m-l rem">字符串粘贴处：<input id="openid" type="text"></p>
+                    <p class="m-l"><button name="2" class="btn btn-info open-sub">提交</button></p>
+                    <span class="m-l">提示：若之前绑定过，提交输入框为空即可</span>
+                </div>
+                <div class="exp zz" style="display: none">
+                    <p class="rem">修改经验：</p>
+                    {% for o in exp_info %}
+                        <p><span class="rem">项目：<span class="tishi">{{ o.p_name }}</span></span></p>
+                        <p class="m-l">
+                            <span class="rem">当前经验值：<span id="{{ p_id }}exp" class="tishi">{{ o.exp }}</span>
+                                            <span class="m-l">等级：</span><span id="{{ p_id }}level" class="tishi">{{ o.level }}</span>
+                                            <span class="m-l">称号：</span><span id="{{ p_id }}honer" class="tishi">{{ o.honer }}</span>
+                                        </span>
+                            <button p_id="{{ p_id }}" class="btn btn-default m-l u-exp" name="1" value="10">+10exp</button>
+                            <button p_id="{{ p_id }}" class="btn btn-default m-l u-exp" name="2" value="10">-10exp</button>
+                        </p>
+                    {% endfor %}
+                </div>
             </div>
         </div>
+        <script>
+            $('.u-exp').click(function () {
+                var type = $(this).attr('name');
+                var str = $(this).val();
+                var p_id = $(this).attr('p_id');
+                settings = {
+                    url:"/update/exp/",
+                    type:'get',
+                    data:{"type":type,"value":str,"p_id":p_id},
+                    success:function (data) {
+                        alert(data.message);
+                        if(data.data.status == 1){
+                            $('#'+p_id+'exp').text('exp');
+                            $('#'+p_id+'level').text('level');
+                            $('#'+p_id+'honer').text('honer');
+                        }
+                    }
+                };
+                $.ajax(settings)});
+            $('.open-sub').click(function () {
+                var type = $(this).attr('name');
+                var str = $('#openid').val();
+                settings = {
+                    url:"/update/weixin/",
+                    type:'get',
+                    data:{"type":type,"openid":str},
+                    success:function (data) {
+                        alert(data.message);
+                        if(data.data.status == 1){
+                            window.location.reload()}
+                    }
+                };
+                $.ajax(settings)
+            });
+            $(function () {
+                $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
+                    var activeTab = $(e.target).text();
+                    $("#dropdown").html(activeTab);
+                });
+            });
+        </script>
     {% else %}
         <p class="a-title">尊敬的<span class="a-auth">{{ user.first_name }}</span>老师！</p>
         <div id="a-content">
@@ -63,43 +165,54 @@
                     {% endif %}
                     <p><span class="rem">已培训完成的科目：</span></p>
                     {% if not already_info %}
-                            <p><span class="rem m-l tishi">您目前没有已获取督导资格的科目！</span></p>
-                        {% else %}
-                            {% for o in already_info %}
-                                <p><span class="rem m-l tishi">{{ o.project_name }}</span>
-                                    <button type="button"
-                                            class="btn btn-disabled" disabled style="margin-left: 20%">点我通过培训
-                                    </button>
-                                    <button id="{{ o.project_id }}" type="button"
-                                            class="btn btn-primary pass1"  style="margin-left: 20%">反向功能
-                                    </button>
-                                </p>
-                            {% endfor %}
-                        {% endif %}
+                        <p><span class="rem m-l tishi">您目前没有已获取督导资格的科目！</span></p>
+                    {% else %}
+                        {% for o in already_info %}
+                            <p><span class="rem m-l tishi">{{ o.project_name }}</span>
+                                <button type="button"
+                                        class="btn btn-disabled" disabled style="margin-left: 20%">点我通过培训
+                                </button>
+                                <button id="{{ o.project_id }}" type="button"
+                                        class="btn btn-primary pass1" style="margin-left: 20%">反向功能
+                                </button>
+                            </p>
+                        {% endfor %}
+                    {% endif %}
                 </div>
                 <div class="more zz" style="display: none">
                     <p><span class="rem">更多功能敬请期待！！！</span></p>
                 </div>
             </div>
         </div>
+        <script>
+            $('.pass').click(function () {
+                var id = $(this).attr('id');
+                settings = {
+                    url: "/update/dudao/",
+                    type: "get",
+                    data: {"project_id": id, "type": 1},
+                    success: function (result) {
+                        alert('恭喜你，培训完成！');
+                        window.location.reload()
+                    }
+                };
+                $.ajax(settings)
+            });
+            $('.pass1').click(function () {
+                var id = $(this).attr('id');
+                settings = {
+                    url: "/update/dudao/",
+                    type: "get",
+                    data: {"project_id": id, "type": 2},
+                    success: function (result) {
+                        alert('恭喜你，取消培训完成！');
+                        window.location.reload()
+                    }
+                };
+                $.ajax(settings)
+            })
+        </script>
     {% endif %}
-    <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
-         aria-hidden="true" style="margin-top: 200px">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                    <h4 class="modal-title" id="myModalLabel"><img src="{% static 'imgs/dashang.png' %}">打赏一下吧！！！<img src="{% static 'imgs/dashang.png' %}"></h4>
-                </div>
-                <div style="text-align: center"><img class="money" src={% static 'imgs/money.png' %} alt="">
-                </div>
-
-                <div class="modal-footer center" style="text-align: center">
-                    <button type="button" n-type="{{ type }}" class="btn btn-success">打赏完毕</button>
-                </div>
-            </div><!-- /.modal-content -->
-        </div><!-- /.modal data-target="#myModal" data-toggle="modal" -->
-    </div>
     <script>
         $('.a-content-left').each(function () {
             $(this).click(function () {
@@ -110,31 +223,6 @@
                 $('.' + name).css('display', 'block')
             })
         });
-        $('.pass').click(function () {
-            var id = $(this).attr('id');
-            settings = {
-                url:"/update/dudao/",
-                type:"get",
-                data:{"project_id":id,"type":1},
-                success:function (result) {
-                    alert('恭喜你，培训完成！');
-                    window.location.reload()
-                }
-            };
-            $.ajax(settings)
-        });
-        $('.pass1').click(function () {
-            var id = $(this).attr('id');
-            settings = {
-                url:"/update/dudao/",
-                type:"get",
-                data:{"project_id":id,"type":2},
-                success:function (result) {
-                    alert('恭喜你，取消培训完成！');
-                    window.location.reload()
-                }
-            };
-            $.ajax(settings)
-        })
+
     </script>
 {% endblock %}
