@@ -9,14 +9,23 @@
                 <div class="a-content-left hid" name="base-info">基本信息</div>
                 <div class="a-content-left" name="weixin">绑定微信</div>
                 <div class="a-content-left" name="exp">修改经验</div>
-                <div class="a-content-left">清除数据</div>
+                <div class="a-content-left" name="clear">清除数据</div>
                 <div class="a-content-left">抹除数据</div>
             </div>
             <div id="a-content-right">
                 <div class="base-info zz">
                     <p><span class="rem">************通用信息************</span></p>
                     <p><span class="rem">学生ID：<span class="tishi">{{ user.id }}</span></span></p>
-                    <p><span class="rem">是否绑定微信：<span class="tishi">{{ is_weinxin }}</span></span></p><br>
+                    <p><span class="rem">是否绑定微信：<span class="tishi">{{ is_weinxin }}</span></span></p>
+                    {% if is_daan %}
+                        <p><span class="rem">是否有答案权限：<span class="tishi">有</span></span>
+                            <a href="/update/answer?type=2" class="btn btn-primary m-l" style="padding: 5px">取消答案</a>
+                        </p>
+                    {% else %}
+                        <p><span class="rem">是否有答案权限：<span class="tishi">无</span></span>
+                            <a href="/update/answer?type=1" class="btn btn-primary m-l">添加答案</a>
+                        </p>
+                    {% endif %}
                     <p><span class="rem">************科目信息************</span></p>
                     <ul id="myTab" class="nav">
                         <li class="dropdown">
@@ -26,87 +35,112 @@
                             <span class="m-l"><span class="glyphicon glyphicon-hand-left"></span>点击左边按钮查看不同项目</span>
                             <ul class="dropdown-menu" role="menu" aria-labelledby="myTabDrop1">
                                 {% for o in pro_info %}
-                                <li><a href="#{{ o.p_id }}" tabindex="-1" data-toggle="tab">{{ o.p_name }}</a></li>
+                                    <li><a href="#{{ o.p_id }}" tabindex="-1" data-toggle="tab">{{ o.p_name }}</a></li>
                                 {% endfor %}
                             </ul>
                         </li>
                     </ul>
                     <div id="myTabContent" class="tab-content">
                         {% for o in pro_info %}
-                        <div class="tab-pane fade" id="{{ o.p_id }}">
-                            <p style="margin-top: 20px;"><span class="rem">头像：<span class="tishi">暂不支持</span></span></p>
-                            <p><span class="rem">当前经验值：<span class="tishi">{{ o.exp }}</span>
+                            <div class="tab-pane fade" id="{{ o.p_id }}">
+                                <p style="margin-top: 20px;"><span class="rem">头像：<span class="tishi">暂不支持</span></span>
+                                </p>
+                                <p><span class="rem">当前经验值：<span class="tishi">{{ o.exp }}</span>
                                             <span class="m-l">等级：</span><span class="tishi">{{ o.level }}</span>
                                             <span class="m-l">称号：</span><span class="tishi">{{ o.honer }}</span>
                                         </span></p>
-                            <p><span class="rem">当前教材：<span class="tishi">{{ o.book }}</span></span></p>
-                            <p><span class="rem">当前班级：<span class="tishi">{{ o.cls.name }}({{ o.cls.id }})</span></span></p>
-                            <p><span class="rem">当前课时：<span class="tishi">{{ o.current.c_name }}({{ o.current.c_id }})</span></span></p>
-                            <p><span class="rem">当前关卡：<span class="tishi">{{ o.current.level }}</span></span></p>
-                        </div>
+                                <p><span class="rem">当前教材：<span class="tishi">{{ o.book }}</span></span></p>
+                                <p><span class="rem">当前班级：<span
+                                        class="tishi">{{ o.cls.name }}({{ o.cls.id }})</span></span></p>
+                                <p><span class="rem">当前课时：<span
+                                        class="tishi">{{ o.current.c_name }}({{ o.current.c_id }})</span></span></p>
+                                <p><span class="rem">当前关卡：<span class="tishi">{{ o.current.level }}</span></span></p>
+                            </div>
                         {% endfor %}
                     </div>
                 </div>
                 <div class="weixin zz" style="display: none">
                     <p><span class="rem">微信绑定、解绑、更换用户：</span></p>
                     <p><span class="rem">当前状态：<span class="tishi">{{ is_weinxin }}</span></span>
-                        <button name="1" class="btn btn-info open-sub" style="margin-left: 20%">解绑</button></p>
+                        <button name="1" class="btn btn-info open-sub" style="margin-left: 20%">解绑</button>
+                    </p>
                     <p><span class="rem">微信绑定流程：</span></p>
                     <p class="m-l rem">1、绑定优鸿教育微信公众号 <br>
                         <img class="money" src="{% static 'imgs/yh_weixin.jpg' %}" style="margin-left: 30px;">
                         <br>2、向系统发送“//openid”，等待系统返回字符串
-                    <br>3、将返回的字符串粘贴到下面的输入框内，点击提交即可。
+                        <br>3、将返回的字符串粘贴到下面的输入框内，点击提交即可。
                     </p>
                     <p class="m-l rem">字符串粘贴处：<input id="openid" type="text"></p>
-                    <p class="m-l"><button name="2" class="btn btn-info open-sub">提交</button></p>
+                    <p class="m-l">
+                        <button name="2" class="btn btn-info open-sub">提交</button>
+                    </p>
                     <span class="m-l">提示：若之前绑定过，提交输入框为空即可</span>
                 </div>
                 <div class="exp zz" style="display: none">
                     <p class="rem">修改经验：</p>
                     {% for o in exp_info %}
-                        <p><span class="rem">项目：<span class="tishi">{{ o.p_name }}</span></span></p>
+                        <p><span class="rem">项目：<span class="tishi">{{ o.p_name }}</span>
+                            <span class="e-info-{{ o.p_id }}"
+                                  style="font-size: 1rem;margin-left: 20px;color: red"></span></span></p>
                         <p class="m-l">
-                            <span class="rem">当前经验值：<span id="{{ p_id }}exp" class="tishi">{{ o.exp }}</span>
-                                            <span class="m-l">等级：</span><span id="{{ p_id }}level" class="tishi">{{ o.level }}</span>
-                                            <span class="m-l">称号：</span><span id="{{ p_id }}honer" class="tishi">{{ o.honer }}</span>
-                                        </span>
-                            <button p_id="{{ p_id }}" class="btn btn-default m-l u-exp" name="1" value="10">+10exp</button>
-                            <button p_id="{{ p_id }}" class="btn btn-default m-l u-exp" name="2" value="10">-10exp</button>
+                            <span class="rem">当前经验值：<span id="{{ o.p_id }}exp" class="tishi">{{ o.exp }}</span>
+                                            <span class="m-l">等级：</span><span id="{{ o.p_id }}level"
+                                                                              class="tishi">{{ o.level }}</span>
+                                            <span class="m-l">称号：</span><span id="{{ o.p_id }}honer"
+                                                                              class="tishi">{{ o.honer }}</span>
+                                        </span><br>
+                            <button p="{{ o.p_id }}" class="btn btn-default u-exp" name="110">+10exp</button>
+                            <button p="{{ o.p_id }}" class="btn btn-default u-exp" name="120">+20exp</button>
+                            <button p="{{ o.p_id }}" class="btn btn-default u-exp" name="150">+50exp</button>
+                            <button p="{{ o.p_id }}" class="btn btn-default u-exp" name="1100">+100exp</button>
+                            <button p="{{ o.p_id }}" class="btn btn-warning u-exp" name="210">-10exp</button>
+                            <button p="{{ o.p_id }}" class="btn btn-warning u-exp" name="220">-20exp</button>
+                            <button p="{{ o.p_id }}" class="btn btn-warning u-exp" name="250">-50exp</button>
+                            <button p="{{ o.p_id }}" class="btn btn-warning u-exp" name="2100">-100exp</button>
                         </p>
                     {% endfor %}
+                </div>
+                <div class="clear zz" style="display: none">
+                    <p class="rem">清除数据：</p>
+
                 </div>
             </div>
         </div>
         <script>
             $('.u-exp').click(function () {
                 var type = $(this).attr('name');
-                var str = $(this).val();
-                var p_id = $(this).attr('p_id');
+                var p_id = $(this).attr('p');
+                var str = $('#' + p_id + 'exp').text();
+                console.log('点击了修改经验');
+                console.log(type, str, p_id);
                 settings = {
-                    url:"/update/exp/",
-                    type:'get',
-                    data:{"type":type,"value":str,"p_id":p_id},
-                    success:function (data) {
-                        alert(data.message);
-                        if(data.data.status == 1){
-                            $('#'+p_id+'exp').text('exp');
-                            $('#'+p_id+'level').text('level');
-                            $('#'+p_id+'honer').text('honer');
+                    url: "/update/exp/",
+                    type: 'get',
+                    data: {"type": type, "value": str, "p_id": p_id},
+                    success: function (data) {
+                        console.log(data.message);
+                        if (data.data.status == 1) {
+                            $('#' + p_id + 'exp').text(data.data.exp);
+                            $('#' + p_id + 'level').text(data.data.level);
+                            $('#' + p_id + 'honer').text(data.data.honer);
+                            $('.e-info-' + p_id).text('您刚刚操作：' + data.data.last + 'exp！操作成功！当前：' + data.data.exp)
                         }
                     }
                 };
-                $.ajax(settings)});
+                $.ajax(settings)
+            });
             $('.open-sub').click(function () {
                 var type = $(this).attr('name');
                 var str = $('#openid').val();
                 settings = {
-                    url:"/update/weixin/",
-                    type:'get',
-                    data:{"type":type,"openid":str},
-                    success:function (data) {
+                    url: "/update/weixin/",
+                    type: 'get',
+                    data: {"type": type, "openid": str},
+                    success: function (data) {
                         alert(data.message);
-                        if(data.data.status == 1){
-                            window.location.reload()}
+                        if (data.data.status == 1) {
+                            window.location.reload()
+                        }
                     }
                 };
                 $.ajax(settings)

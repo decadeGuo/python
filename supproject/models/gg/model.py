@@ -125,3 +125,12 @@ class UserBookClass(models.Model):
 
     class Meta:
         db_table = 'yh_user_book_class'
+class YhInsideUser(models.Model):
+    """
+    内部用户表
+    """
+    user_id = models.IntegerField(u'用户id')
+    status = models.IntegerField(u'是否启用')  # 0不启用  1启用
+
+    class Meta:
+        db_table = 'yh_inside_user'

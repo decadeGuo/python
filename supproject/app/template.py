@@ -2,7 +2,7 @@
 from django.shortcuts import render
 
 from core.common import Struct, fetchall_to_many, get_stu_level, get_stu_current
-from models.gg.model import UserBookClass, SchoolClass, Project, TeacherProject, YhWeixinBind
+from models.gg.model import UserBookClass, SchoolClass, Project, TeacherProject, YhWeixinBind, YhInsideUser
 from supproject.settings import DB_NAME
 
 
@@ -73,6 +73,7 @@ def after_login(request):
     p_ids = [int(o.get('p_id')) for o in DB_NAME]
     if int(type) == 1:
         is_weinxin = u'已绑定' if YhWeixinBind.objects.filter(user_id=uid,status=1).exists() else u'未绑定'
+        is_daan = 1 if YhInsideUser.objects.filter(user_id=uid,status=1).exists() else 0
         user_book = UserBookClass.objects.filter(user_id=uid,user_book__project_id__in=p_ids)
         cls_ids = [int(o.cls_id) for o in user_book]
         cls_info = SchoolClass.objects.filter(pk__in=cls_ids).values("id", "name")
@@ -93,7 +94,8 @@ def after_login(request):
             type=int(type),
             is_weinxin=is_weinxin,
             pro_info=pro_info,
-            exp_info=exp_info
+            exp_info=exp_info,
+            is_daan = is_daan
         )
     else:  # 教师信息
         # 改教师名下所有的班级

@@ -1,8 +1,11 @@
 #coding:utf-8
 import time
 
-from core.common import ajax, fetchall_to_many, conn_db
-from models.gg.model import User, TeacherProject, YhWeixinBind
+from django.shortcuts import redirect
+
+from core.common import ajax, fetchall_to_many, conn_db, exp_to_grade
+from models.gg.model import User, TeacherProject, YhWeixinBind, YhInsideUser
+from supproject.settings import DB_NAME
 
 
 def dudao(request):
@@ -51,4 +54,49 @@ def weixin(request):
             return ajax(dict(status=1), message=u'解绑成功！')
         else:
             return ajax(message=u'你还没绑定微信，赶紧绑定吧！')
+
+def exp(request):
+    """修改经验"""
+    type = request.GET.get('type','000')    # 类型加经验1100
+    exp = int(request.GET.get('value','0'))   # 当前经验
+    p_id = int(request.GET.get('p_id'))
+    uid = request.uid
+    add_exp = int(type[1:]) # 需要添加或者减少的经验
+
+    value = add_exp if int(type[0]) == 1 else -add_exp if int(type[0]) == 2 else 0
+    if int(type[0]) == 2:
+        if exp <= add_exp:
+            value = exp if int(type[0]) == 1 else -exp
+    db_name = next(i for i in DB_NAME if int(i.get('p_id')) == p_id).get('db_name')
+    sql = """UPDATE user_extend SET exp=exp+{value} WHERE user_id = {uid}""".format(value=value,uid=uid)
+
+    conn_db(db_name,sql,57)
+    honer,level = exp_to_grade(exp+value)
+    data = dict(
+        status=1,
+        exp = exp+value,
+        level=level,
+        honer = honer,
+        last = u'+%s'%add_exp if int(type[0]) == 1 else u'-%s'%add_exp
+    )
+    return ajax(data=data,message=u'修改成功！')
+
+def daan(request):
+    """答案权限"""
+    uid = request.uid
+    type = int(request.GET.get('type','1'))
+    info = YhInsideUser.objects.filter(user_id=uid)
+    if type == 1:
+        if info:
+            YhInsideUser.objects.filter(user_id=uid).update(status=1)
+        else:
+            YhInsideUser.objects.create(user_id=uid,status=1)
+    else:
+        YhInsideUser.objects.filter(user_id=uid).update(status=0)
+
+    return redirect('/index/')
+def clear(request):
+    """清楚数据，具体到某一关"""
+
+
 
