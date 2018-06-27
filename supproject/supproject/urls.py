@@ -15,21 +15,23 @@ Including another URLconf
 """
 from django.conf.urls import url, include
 from django.contrib import admin
-from app import index,login,template
-import settings
+from app import login, template
+# import settings
+# from settings import MEDIA_SITE
+# from django.conf import settings
 from django.views.static import serve
 
 urlpatterns = [
     # url(r'^admin/', admin.site.urls),
-    url(r'^$',template.index),
+    url(r'^$', template.index),
     url(r'^update/', include('app.urls')),
-    # url(r'^static/(?P<path>.*)$', serve, {'document_root': settings.MEDIA_SITE}),
+    # url(r'^static/(?P<path>.*)$', serve, {'document_root': MEDIA_SITE}),
 ]
 
 urlpatterns += [
-    url(r'^login/$',login.auth_login),
-    url(r'^logout/$',login.logput),
+    url(r'^login/$', login.auth_login),
+    url(r'^logout/$', login.logput),
 ]
 urlpatterns += [
-    url(r'index/$',template.after_login)
+    url(r'index/$', template.after_login)
 ]

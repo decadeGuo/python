@@ -26,9 +26,9 @@ class TeacherProject(models.Model):
     ----------------------------------
     张豪飞     2018-03-02
     """
-    user = models.ForeignKey(User)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
     teacher_id = models.IntegerField()
-    project = models.ForeignKey(Project)
+    project = models.ForeignKey(Project, on_delete=models.CASCADE)
     status = models.IntegerField(default=1)  # 督导状态 1：督导此科目  -1：未督导此科目（可能是非督导或者督导未选择此科目）
     trained = models.IntegerField(default=0)  # 0：未培训通过   1：培训通过
     trained_time = models.DateTimeField(null=True)  # 培训通过时间
@@ -83,10 +83,10 @@ class UserBook(models.Model):
         (0, u'教材过期，不可用'),
         (1, u'可用')
     )
-    user = models.ForeignKey(User)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
     book_id = models.IntegerField(u"教材ID", default=0)  # 不同科目教材表不同(同一教材不同type算两本不同教材两条记录)
     status = models.IntegerField(u'状态')  # 1：可用(已缴费)  0:不可用(未交费) 2:交费到期  -1 已删除
-    project = models.ForeignKey(Project, verbose_name=u"优佳项目ID")  # 当前教材所属科目（作为教材的属性，非限制字段）
+    project = models.ForeignKey(Project, verbose_name=u"优佳项目ID", on_delete=models.CASCADE)  # 当前教材所属科目（作为教材的属性，非限制字段）
 
     class Meta:
         db_table = 'yh_user_book'
@@ -115,10 +115,10 @@ class UserBookClass(models.Model):
         (0, u'教材过期，不可用'),
         (1, u'可用')
     )
-    user = models.ForeignKey(User)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
     user_type = models.IntegerField(u'用户类型')  # １学生 3教师(教师没有教材)
-    cls = models.ForeignKey(SchoolClass, verbose_name=u"班级ID")  # 班级
-    user_book = models.ForeignKey(UserBook, null=True)
+    cls = models.ForeignKey(SchoolClass, verbose_name=u"班级ID", on_delete=models.CASCADE)  # 班级
+    user_book = models.ForeignKey(UserBook, null=True, on_delete=models.CASCADE)
     is_new = models.IntegerField(u"是否是新生", default=1)  # 0 不是 1 是
     temp_class_id = models.IntegerField(u"临时上课班级", default=0)  # 点名更新该字段
     temp_update_time = models.IntegerField(u"临时调班的时间", default=0)
