@@ -12,14 +12,14 @@
     <link href={% static 'sup.css' %} rel="stylesheet">
 </head>
 <body>
-<div style="position:absolute;top: 30px;left: 100px;">
-    <button id="close" class="btn btn-info">关闭本页面广告</button>
-    <br>
-    <span>功能说明：<br>教师端：提供快速通过培训<br>学生端：自己登陆体验，点击没有反应的说明还未完成</span>
+<div style="position:absolute;top: 30px;left: 100px;color: grey">
+    <span id="close" class="btn btn-default">帝王视觉体验</span><br>
+    <span>功能说明：<br>教师端：提供快速通过培训<br>学生端：自己登陆体验<br>如有报错，纯属正常！</span>
 </div>
 
 <header id="title"><img src={% static 'imgs/huaji.png' %}>优鸿教育项目辅助工具<img src={% static 'imgs/huaji.png' %}><br>
-    <span class="auther">作者:秋名山车神(内部人员专用)</span> <span class="auther">适用项目：预科以后且有作者参与开发的项目</span>
+    <span class="auther">作者:GUO Dongbo(内部人员专用)</span> <span class="auther">适用项目：预科以后且有作者参与开发的项目</span>
+
 </header>
 <div class="guanggao_left">
     <img class="money" src={% static 'imgs/money.png' %}>
@@ -94,12 +94,17 @@
             </div>
         </form>
     {% endblock %}
+
 </div>
+<footer style="position: absolute;bottom: 0;width: 100%">
+    <p style="text-align: center;">版权所有，翻版必究！联系QQ:1641421227</p>
+</footer>
 <script>
+    {#$('.guanggao_left,.guanggao_right').css("display","none");#}
     $('#close').click(function () {
-        alert("去广告测试\n尊贵的VIP会员，即将为您去掉广告");
-        $('.guanggao_left,.guanggao_right').css("display","none");
-        $(this).text('已关毕')
+        alert("\n尊贵的VIP会员，即将为您显示帝王视觉");
+        $('.guanggao_left,.guanggao_right').css("display","block");
+        $(this).text('已开启帝王视觉')
     })
 </script>
 </body>

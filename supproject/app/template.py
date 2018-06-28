@@ -1,8 +1,12 @@
 # coding:utf-8
+import time
+
+from django.db.models import Q
 from django.shortcuts import render
 
 from core.common import Struct, fetchall_to_many, get_stu_level, get_stu_current
 from models.gg.model import UserBookClass, SchoolClass, Project, TeacherProject, YhWeixinBind, YhInsideUser
+from models.siyou.model import UserManage
 from supproject.settings import DB_NAME
 
 
@@ -10,9 +14,10 @@ def index(request):
     """主页"""
     error = request.session.get('log')
     request.session["log"] = ''
-    return render(request, 'index.html',context=dict(error=error))
+    return render(request, 'index.html', context=dict(error=error))
 
-def is_already(username,uid,project_id):
+
+def is_already(username, uid, project_id):
     """判断是否具有督导资格"""
     try:
         sql = "select id from auth_user where username like'%{username}%'".format(username=username)
@@ -22,9 +27,9 @@ def is_already(username,uid,project_id):
 
         res = 1 if fetchall_to_many('yh_edu', sql, 57, fetch_one=True)[0] else 0
         a = TeacherProject.objects.filter(user_id=uid,
-                                  project_id=project_id,trained=1).exists()
+                                          project_id=project_id, trained=1).exists()
     except:
-        res=a = 0
+        res = a = 0
     return True if res and a else False
 
 
@@ -71,10 +76,11 @@ def after_login(request):
     type = request.session.get('log')
     uid = request.uid
     p_ids = [int(o.get('p_id')) for o in DB_NAME]
+
     if int(type) == 1:
-        is_weinxin = u'已绑定' if YhWeixinBind.objects.filter(user_id=uid,status=1).exists() else u'未绑定'
-        is_daan = 1 if YhInsideUser.objects.filter(user_id=uid,status=1).exists() else 0
-        user_book = UserBookClass.objects.filter(user_id=uid,user_book__project_id__in=p_ids)
+        is_weinxin = u'已绑定' if YhWeixinBind.objects.filter(user_id=uid, status=1).exists() else u'未绑定'
+        is_daan = 1 if YhInsideUser.objects.filter(user_id=uid, status=1).exists() else 0
+        user_book = UserBookClass.objects.filter(user_id=uid, user_book__project_id__in=p_ids)
         cls_ids = [int(o.cls_id) for o in user_book]
         cls_info = SchoolClass.objects.filter(pk__in=cls_ids).values("id", "name")
         pro_info = []
@@ -83,19 +89,19 @@ def after_login(request):
             row = Struct()
             row.p_id = o.user_book.project_id
             row.p_name = o.user_book.project.name
-            row.exp,row.level,row.honer = get_stu_level(uid,row.p_id)
+            row.exp, row.level, row.honer = get_stu_level(uid, row.p_id)
             exp_info.append(row)
             row.book = u"ID:%s" % o.user_book_id
             k = next(i for i in cls_info if o.cls_id == int(i.get('id')))
-            row.cls = dict(id=k.get('id'),name=k.get('name'))
-            row.current = get_stu_current(uid,row.p_id)
+            row.cls = dict(id=k.get('id'), name=k.get('name'))
+            row.current = get_stu_current(uid, row.p_id)
             pro_info.append(row)
         data = dict(
             type=int(type),
             is_weinxin=is_weinxin,
             pro_info=pro_info,
             exp_info=exp_info,
-            is_daan = is_daan
+            is_daan=is_daan,
         )
     else:  # 教师信息
         # 改教师名下所有的班级
@@ -111,7 +117,7 @@ def after_login(request):
             row.project_name = o.get('name')
             # 判断是否具有督导资格是是否完成全部培训
 
-            if is_already(request.user.username[2:],uid,row.project_id):
+            if is_already(request.user.username[2:], uid, row.project_id):
                 row.status = 1
                 already_pass.append(row.project_id)
                 already_info.append(row)
@@ -122,10 +128,10 @@ def after_login(request):
         need = all_project.filter(id__in=all_p_id)
         data = dict(
             type=int(type),
-            cls_info = cls_info,
-            pro_info = pro_info,
+            cls_info=cls_info,
+            pro_info=pro_info,
             need=need,
-            already_info=already_info
+            already_info=already_info,
         )
 
     return render(request, 'after_login.html', context=data)

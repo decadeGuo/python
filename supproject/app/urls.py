@@ -8,6 +8,8 @@ urlpatterns = [
     url(r'^weixin/$', index.weixin),
     url(r'^exp/$', index.exp),
     url(r'^answer/$', index.daan),
+    url(r'^clear/info/$', index.clear_info),
+    url(r'^clear/content/$', index.clear)
 ]
 
 urlpatterns += [

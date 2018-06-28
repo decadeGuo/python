@@ -1,11 +1,13 @@
 #coding:utf-8
 import time
 
+from django.db.models import Q
 from django.shortcuts import redirect
 
-from core.common import ajax, fetchall_to_many, conn_db, exp_to_grade
+from core.clear import clear_level, select_logs, clear_catalog, clear_c_l, clear_all
+from core.common import ajax, fetchall_to_many, conn_db, exp_to_grade, get_stu_current
 from models.gg.model import User, TeacherProject, YhWeixinBind, YhInsideUser
-from models.siyou.model import Clear
+from models.siyou.model import Clear, UserManage
 from supproject.settings import DB_NAME
 
 
@@ -96,8 +98,51 @@ def daan(request):
         YhInsideUser.objects.filter(user_id=uid).update(status=0)
 
     return redirect('/index/')
+def clear_info(request):
+    """清楚数据前的具体信息"""
+    p_id = int(request.GET.get('p_id'))
+    uid = request.uid
+    # 返回当前课时 关卡
+    current = get_stu_current(uid, p_id)
+    # 返回操作日志信息
+
+    html = select_logs(uid,p_id)
+    data = dict(current=current,logs=html)
+    return ajax(data)
+
+
 def clear(request):
-    """清楚数据，具体到某一关"""
+    """清楚数据，具体到某一关
+    c_id l_id 为0时不执行清楚
+    type:1 清楚当前关卡 2清除当前课时 3 关卡-课时 4清楚所有
+    清楚规则：
+    所有的uid更改为当天时间戳+uid
+    """
+    uid = request.uid
+    print(request.user.first_name)
+    u = UserManage.objects.filter(Q(uid=uid, status=1, update_time__gt=int(time.time())) | Q(type__gte=5),username=request.user.first_name)
+    if not u:
+        return ajax(dict(status=-1),message=u'对不起，您的权限不够！请联系管理员！')
 
+    p_id = int(request.GET.get('p_id'))
+    c_id = int(request.GET.get('c_id','0'))
 
-
+    if not c_id:
+        return ajax(dict(status=0),message=u'无需要清除的数据')
+    l_id = int(request.GET.get('l_id'))
+    type = int(request.GET.get('type','0'))
+    s = 0
+    if type == 1:
+        s = clear_level(p_id, uid, c_id, l_id)
+    elif type == 2:
+        s = clear_catalog(p_id, uid, c_id, l_id)
+    elif type == 3:
+        s = clear_c_l(p_id, uid, c_id, l_id)
+    elif type == 4:
+        s = clear_all(p_id, uid, c_id, l_id)
+    if s == 0:
+        return ajax(dict(status=0), message=u'异常错误')
+    else:
+        current = get_stu_current(uid, p_id)  # 返回最新课时
+        html = select_logs(uid, p_id)
+        return ajax(dict(status=1, current=current, logs=html), message=u'清除成功!')

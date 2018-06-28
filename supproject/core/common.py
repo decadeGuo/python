@@ -54,12 +54,17 @@ def db_base(db_name, type):
                            charset="utf8")
 
 
-def conn_db(db_name, sql, type):
+def conn_db(db_name, sql, type,many=False):
     """更新操作"""
     conn = db_base(db_name, type)
     cxn = conn.cursor()
-    cxn.execute(sql)
-    conn.commit()
+    if many:
+        for o in sql.split(";"):
+            cxn.execute(o.strip())  # 去掉空格
+            conn.commit()
+    else:
+        cxn.execute(sql)
+        conn.commit()
     cxn.close()
     conn.close()
 
@@ -82,11 +87,12 @@ def fetchall_to_many(db_name, sql, type, fetch_one=False, fetch_all=False):
     cxn.close()
     conn.close()
     return object_list
-
+def get_db_name(p_id):
+    return next(i for i in DB_NAME if int(i.get('p_id')) == p_id).get('db_name')
 
 def get_stu_level(user_id, p_id):
     """获取学生的等级经验"""
-    db_name = next(i for i in DB_NAME if int(i.get('p_id')) == p_id).get('db_name')
+    db_name = get_db_name(p_id)
     sql = """SELECT exp FROM `user_extend` WHERE user_id = {user_id};""".format(user_id=user_id)
     exp = fetchall_to_many(db_name, sql, 57, fetch_one=True)[0]
     honer, level = exp_to_grade(exp)
@@ -95,11 +101,16 @@ def get_stu_level(user_id, p_id):
 
 def get_stu_current(user_id, p_id):
     """获取学生当前课时"""
-    db_name = next(i for i in DB_NAME if int(i.get('p_id')) == p_id).get('db_name')
-    sql = """SELECT t.catalog_id,t.level_id FROM test t JOIN user_current_catalog p 
+    db_name = get_db_name(p_id)
+    sql = """SELECT mystic_position FROM user_current_catalog WHERE user_id={uid}""".format(uid=user_id)
+    mystic = fetchall_to_many(db_name, sql, 57, fetch_one=True)[0]
+    if mystic:
+        return dict(c_id=0, level=u'无', c_name=u'神秘关卡')
+    sql = """SELECT p.catalog_id,t.level_id FROM test t JOIN user_current_catalog p 
               ON t.user_book_id = p.user_book_id AND p.catalog_id = t.catalog_id WHERE p.user_id={user_id};""".format(user_id=user_id)
     res = fetchall_to_many(db_name,sql,57,fetch_one=True)
-
+    if not res:
+        return dict(c_id=0, level=u'无', c_name=u'无')
     catalog_id = res[0]
     level_id = res[-1]
 
