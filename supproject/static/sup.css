@@ -100,3 +100,22 @@
 .tishi{
     color: dodgerblue;
 }
+.c-clear{
+    width: 100px;
+    border-radius: 5px;
+    margin-left: 10px;
+    border: 1px solid green;
+}
+#c-rizhi{
+    /*border: 1px green solid;*/
+    position: absolute;
+    top:40px;
+    right: 50px;
+    height: 480px;
+    width: 300px;
+    padding: 20px;
+}
+.c-rizhi{
+    font-size: 1.5rem;
+    color: red;
+}

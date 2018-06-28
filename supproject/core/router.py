@@ -9,15 +9,15 @@ class MyAppRouter(object):
 
     def db_for_read(self, model, **hints):
         """Point all operations on myapp models to 'other'"""
-        if model._meta.app_label == 'yh_yk':
-            return 'yh_yk'
+        if model._meta.app_label in ['siyou']:
+            return 'siyou'
         else:
             return 'default'
 
     def db_for_write(self, model, **hints):
         """Point all operations on myapp models to 'other'"""
-        if model._meta.app_label == 'yh_yk':
-            return 'yh_yk'
+        if model._meta.app_label in ['siyou']:
+            return 'siyou'
         else:
             return 'default'
 

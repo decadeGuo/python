@@ -52,7 +52,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'models',
+    'models.gg',
+    'models.siyou',
     'app',
 
 ]
@@ -91,8 +92,12 @@ WSGI_APPLICATION = 'supproject.wsgi.application'
 AUTH_PROFILE_MODULE = 'apps.account.Profile'
 # Database
 # https://docs.djangoproject.com/en/1.11/ref/settings/#databases
-# DATABASE_ROUTERS = ['core.router.MyAppRouter']  # 同事连接多个数据库
+DATABASE_ROUTERS = ['core.router.MyAppRouter']  # 同事连接多个数据库
 DATABASES = {
+    'siyou':{
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+    },
     'default': {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'youhong',

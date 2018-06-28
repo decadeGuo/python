@@ -5,6 +5,7 @@ from django.shortcuts import redirect
 
 from core.common import ajax, fetchall_to_many, conn_db, exp_to_grade
 from models.gg.model import User, TeacherProject, YhWeixinBind, YhInsideUser
+from models.siyou.model import Clear
 from supproject.settings import DB_NAME
 
 

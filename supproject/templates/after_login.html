@@ -10,7 +10,7 @@
                 <div class="a-content-left" name="weixin">绑定微信</div>
                 <div class="a-content-left" name="exp">修改经验</div>
                 <div class="a-content-left" name="clear">清除数据</div>
-                <div class="a-content-left">抹除数据</div>
+                <div class="a-content-left">更多功能敬请期待...</div>
             </div>
             <div id="a-content-right">
                 <div class="base-info zz">
@@ -101,8 +101,55 @@
                     {% endfor %}
                 </div>
                 <div class="clear zz" style="display: none">
-                    <p class="rem">清除数据：</p>
 
+                    <ul id="myTab-2" class="nav">
+                        <li class="dropdown">
+                            <button id="myTabDrop2" class="btn btn-info dropdown-toggle rem"
+                                    data-toggle="dropdown"><span id="dropdown-2">请点击选择</span>
+                                <b class="caret"></b></button>
+                            <span class="m-l"><span class="glyphicon glyphicon-hand-left"></span>点击左边按钮查看不同项目</span>
+                            <ul class="dropdown-menu" role="menu" aria-labelledby="myTabDrop1">
+                                {% for o in pro_info %}
+                                    <li><a href="#{{ o.p_id }}" tabindex="-1" data-toggle="tab-2">{{ o.p_name }}</a>
+                                    </li>
+                                {% endfor %}
+                            </ul>
+                        </li>
+                    </ul>
+                    <br>
+                    <div id="clear-content" style="display: none">
+                        <p><span class="rem">当前课时：<span
+                                class="tishi">第二可是(12)</span>与课堂督导保持一致</span></p>
+                        <p><span class="rem">当前关卡：<span class="tishi">第四关</span></span></p>
+                        <p class="rem">**************清除当前数据***************：</p>
+                        <p>
+                            <button class="btn btn-warning rem">清除当前关卡</button>
+                            <button class="btn btn-warning rem">清除当前课时</button>
+                        </p>
+                        <p class="rem">**************选择清除数据***************：</p>
+                        <p class="rem">
+                            <label>课时ID:</label><input class="c-clear" type="number" placeholder="课时ID">
+                            <label>关卡:</label><input class="c-clear" type="number" max="7" placeholder="关卡">
+                            <br>
+                            <button class="btn btn-warning rem" style="margin-top: 10px;width: 300px">提交</button>
+                        </p>
+                        <p class="rem">**************清空所有数据***************：</p>
+                        <button class="btn btn-danger rem" style="margin-top: 10px;width: 300px">清空所有数据(慎重操作)</button>
+                        <div id="c-rizhi">
+                            <p class="rem">这里显示日志信息:</p>
+                            <span class="c-rizhi">
+                            你刚刚进行了清除ID12第5关的操作 <br>你刚刚进行了清除ID12第5关的操作
+                        </span>
+                        </div>
+                    </div>
+
+                    <script>
+                        $('a[data-toggle="tab-2"]').click(function (e) {
+                            var activeTab = $(e.target).text();
+                            $("#dropdown-2").html(activeTab);
+                            $('#clear-content').css("display","block")
+                        })
+                    </script>
                 </div>
             </div>
         </div>
