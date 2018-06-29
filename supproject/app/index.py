@@ -148,7 +148,7 @@ def clear(request):
     else:
         current = get_stu_current(uid, p_id)  # 返回最新课时
         html = select_logs(uid, p_id)
-        return ajax(dict(status=1, current=current, logs=html), message=u'清除成功!')
+        return ajax(dict(status=1, current=current, logs=html), message=u'操作成功!')
 
 def super_update(request):
     """获取五分钟的超级权限

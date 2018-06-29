@@ -179,46 +179,59 @@ def clear_all(p_id, uid, c_id, l_id):
     # ************清除所有关卡数据
     sql1 = """select id from test where user_id={user_id} and user_book_id={user_book_id}""".format(user_id=uid,user_book_id=user_book_id)
     tids =[int(o.get('id')) for o in fetchall_to_many(db_name,sql1,57)]
-    print(tids)
-    sql2 = """
-        UPDATE knowledge_study SET id=id+{n},test_id=test_id+{n} WHERE test_id in ({tids});
-        UPDATE method_study SET id=id+{n},test_id=test_id+{n} WHERE test_id in ({tids});
-        UPDATE example_study SET id=id+{n},test_id=test_id+{n} WHERE test_id in ({tids});
-        UPDATE apply_test SET id=id+{n},test_id=test_id+{n} WHERE test_id in ({tids});
-    """.format(tids=','.join(map(str, tids)),n=n)
-    conn_db(db_name,sql2,57,many=True)
-    time.sleep(1)
+    try:
+        sql2 = """
+            UPDATE knowledge_study SET id=id+{n},test_id=test_id+{n} WHERE test_id in ({tids});
+            UPDATE method_study SET id=id+{n},test_id=test_id+{n} WHERE test_id in ({tids});
+            UPDATE example_study SET id=id+{n},test_id=test_id+{n} WHERE test_id in ({tids});
+            UPDATE apply_test SET id=id+{n},test_id=test_id+{n} WHERE test_id in ({tids});
+        """.format(tids=','.join(map(str, tids)),n=n)
+        conn_db(db_name,sql2,57,many=True)
+        time.sleep(0.5)
+    except:
+        pass
     print('清除所有关卡数据')
     # ***********清除学情分析，个性化作业
-    sql3 = """
-        update analysis_statistics set id=id+{n},analysis_id=analysis_id+{n} where analysis_id in (select id from analysis where user_id={user_id} and user_book_id={user_book_id});
-        update personalise_statistics set id=id+{n},personalise_id=personalise_id+{n} where personalise_id in (select id from personalise where user_id={user_id} and user_book_id={user_book_id});
-    """.format(n=n,user_id=uid,user_book_id=user_book_id)
-    conn_db(db_name, sql3, 57, many=True)
-    time.sleep(1)
+    try:
+        sql3 = """
+            update analysis_statistics set id=id+{n},analysis_id=analysis_id+{n} where analysis_id in (select id from analysis where user_id={user_id} and user_book_id={user_book_id});
+            update personalise_statistics set id=id+{n},personalise_id=personalise_id+{n} where personalise_id in (select id from personalise where user_id={user_id} and user_book_id={user_book_id});
+        """.format(n=n,user_id=uid,user_book_id=user_book_id)
+        conn_db(db_name, sql3, 57, many=True)
+        time.sleep(0.5)
+    except:
+        pass
     print('清除学情分析，个性化作业')
     # ***********清除独立部分
-    sql4 = """
-        update mystic set id=id+{n},user_id=user_id+{n},user_book_id=user_book_id+{n} where user_id={user_id} and user_book_id={user_book_id};
-        update user_current_catalog set id=id+{n},user_id=user_id+{n},user_book_id=user_book_id+{n} where user_id={user_id} and user_book_id={user_book_id};
-        update user_extend set id=id+{n},user_id=user_id+{n} where user_id={user_id};
-        update weak set id=id+{n},uid=uid+{n} where uid={user_id};
-    """.format(n=n,user_id=uid,user_book_id=user_book_id)
-    conn_db(db_name, sql4, 57, many=True)
-    time.sleep(1)
+    try:
+        sql4 = """
+            update mystic set id=id+{n},user_id=user_id+{n},user_book_id=user_book_id+{n} where user_id={user_id} and user_book_id={user_book_id};
+            update user_current_catalog set id=id+{n},user_id=user_id+{n},user_book_id=user_book_id+{n} where user_id={user_id} and user_book_id={user_book_id};
+            update user_extend set id=id+{n},user_id=user_id+{n} where user_id={user_id};
+            update weak set id=id+{n},uid=uid+{n} where uid={user_id};
+        """.format(n=n,user_id=uid,user_book_id=user_book_id)
+        conn_db(db_name, sql4, 57, many=True)
+        time.sleep(0.5)
+    except:
+        pass
     print('清除独立部分')
     # ************清除最后关联表
-    sql5 = """
-        update personalise set id=id+{n},user_id=user_id+{n},user_book_id=user_book_id+{n} where user_id={user_id} and user_book_id={user_book_id};
-        update analysis set id=id+{n},user_id=user_id+{n},user_book_id=user_book_id+{n} where user_id={user_id} and user_book_id={user_book_id};
-        update user_communication set id=id+{n},stu_id=stu_id+{n} where stu_id=stu_id and attendance_detail_id in (select id from attendance_detail where user_id={user_id} and user_book_id={user_book_id});
-        update attendance_detail set id=id+{n},user_id=user_id+{n},user_book_id=user_book_id+{n} where user_id={user_id} and user_book_id={user_book_id};
-        UPDATE test SET id=id+{n},user_id=user_id+{n},user_book_id=user_book_id+{n} WHERE id={user_id} AND user_book_id={user_book_id};
-    """.format(n=n,user_id=uid,user_book_id=user_book_id)
-    conn_db(db_name, sql5, 57, many=True)
-    time.sleep(1)
+    try:
+        sql5 = """
+            update personalise set id=id+{n},user_id=user_id+{n},user_book_id=user_book_id+{n} where user_id={user_id} and user_book_id={user_book_id};
+            update analysis set id=id+{n},user_id=user_id+{n},user_book_id=user_book_id+{n} where user_id={user_id} and user_book_id={user_book_id};
+            update user_communication set id=id+{n},stu_id=stu_id+{n} where stu_id=stu_id and attendance_detail_id in (select id from attendance_detail where user_id={user_id} and user_book_id={user_book_id});
+            update attendance_detail set id=id+{n},user_id=user_id+{n},user_book_id=user_book_id+{n} where user_id={user_id} and user_book_id={user_book_id};
+            UPDATE test SET id=id+{n},user_id=user_id+{n},user_book_id=user_book_id+{n} WHERE id={user_id} AND user_book_id={user_book_id};
+        """.format(n=n,user_id=uid,user_book_id=user_book_id)
+        conn_db(db_name, sql5, 57, many=True)
+        time.sleep(0.5)
+    except:
+        pass
     print('清除最后关联表')
 
     UserBook.objects.filter(pk=user_book_id).update(start_catalog_id=0,last_catalog_id=0,used_lesson_num=0)
-
+    time1 = time.strftime('%m/%d %H:%M:%S', time.localtime(int(time.time())))
+    main = u'您于%s恢复了出厂设置--4' % (time1)
+    Clear.objects.create(uid=uid, p_id=p_id, c_id=0, l_id=0, explain=main, add_time=int(time.time()))
     return 1
