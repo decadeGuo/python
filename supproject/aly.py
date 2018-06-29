@@ -32,3 +32,4 @@ print(a.split(";"))
 for o in a.split(";")[:-1]:
     if o != '\n':
         print('>>>>>>>>',o.strip())
+

@@ -3,16 +3,16 @@ $('a[data-toggle="tab-2"]').click(function (e) {
     $("#dropdown-2").html(activeTab);
     $('#clear-content').css("display", "block");
     var p_id = $(this).attr('name');
-
+    var ubd = $(this).attr('ubd');
     settings = {
         url: '/update/clear/info/',
         type: 'get',
-        data: {"p_id": p_id},
+        data: {"p_id": p_id,"user_book_id":ubd},
         success: function (data) {
             $('#c-cid').text(data.data.current.c_name + '(' + data.data.current.c_id + ')');
             $('#c-lid').text('第' + data.data.current.level + '关');
             $('#c-rizhi>.c-rizhi').html(data.data.logs);
-            var obj = {"p_id": p_id, "c_id": data.data.current.c_id, "l_id": data.data.current.level};
+            var obj = {"p_id": p_id, "c_id": data.data.current.c_id, "l_id": data.data.current.level,"ubd":data.data.user_book_id};
             sessionStorage.obj = JSON.stringify(obj);
         }
     };
@@ -33,9 +33,9 @@ $('.cclear').each(function () {
             alert('即将抹除所有该生数据，恢复出厂状态！请谨慎操作！！！')
         }
         if (type == 3) {
-            data1 = {"type": type, "p_id": o.p_id, "c_id": catalog_id, "l_id": level_id}
+            data1 = {"type": type, "p_id": o.p_id, "c_id": catalog_id, "l_id": level_id,"user_book_id":o.ubd}
         } else {
-            data1 = {"type": type, "p_id": o.p_id, "c_id": o.c_id, "l_id": o.l_id}
+            data1 = {"type": type, "p_id": o.p_id, "c_id": o.c_id, "l_id": o.l_id,"user_book_id":o.ubd}
         }
         settings = {
             url: '/update/clear/content/',
@@ -64,7 +64,7 @@ $('.cclear').each(function () {
                     $('#c-lid').text('第' + data.data.current.level + '关');
                     $('#c-rizhi>.c-rizhi').html(data.data.logs);
                     //重新定义新数值
-                    var obj = {"p_id": o.p_id, "c_id": data.data.current.c_id, "l_id": data.data.current.level};
+                    var obj = {"p_id": o.p_id, "c_id": data.data.current.c_id, "l_id": data.data.current.level,"ubd":data.data.user_book_id};
                     sessionStorage.obj = JSON.stringify(obj);
                 }
             }

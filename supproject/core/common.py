@@ -102,15 +102,17 @@ def get_stu_level(user_id, p_id):
     else:
         return 0,0,u'无'
 
-def get_stu_current(user_id, p_id):
+def get_stu_current(user_id, p_id,user_book_id):
     """获取学生当前课时"""
     db_name = get_db_name(p_id)
-    sql = """SELECT mystic_position FROM user_current_catalog WHERE user_id={uid}""".format(uid=user_id)
+    sql = """SELECT mystic_position FROM user_current_catalog WHERE user_id={uid} AND user_book_id={user_book_id}""".format(uid=user_id,
+                                                                                                                            user_book_id=user_book_id)
     mystic = fetchall_to_many(db_name, sql, 57, fetch_one=True)
-    if mystic:
+    if mystic and mystic[0]:
         return dict(c_id=0, level=0, c_name=u'神秘关卡')
     sql = """SELECT p.catalog_id,t.level_id FROM test t JOIN user_current_catalog p 
-              ON t.user_book_id = p.user_book_id AND p.catalog_id = t.catalog_id WHERE p.user_id={user_id};""".format(user_id=user_id)
+              ON t.user_book_id = p.user_book_id AND p.catalog_id = t.catalog_id WHERE p.user_id={user_id} AND 
+              p.user_book_id={user_book_id}""".format(user_id=user_id, user_book_id=user_book_id)
     res = fetchall_to_many(db_name,sql,57,fetch_one=True)
     if not res:
         return dict(c_id=0, level=0, c_name=u'无')

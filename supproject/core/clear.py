@@ -11,11 +11,11 @@ from supproject.settings import CONFIG_INFO, DB_NAME
 n = 1000000
 
 
-def get_test(p_id, uid, cid, lid):
+def get_test(p_id, uid, user_book_id):
     db_name = get_db_name(p_id)
 
-    sql = """SELECT id,level_status,s_json_data,clear_time,user_book_id FROM test WHERE user_id={uid} AND catalog_id={cid}""".format(
-        uid=uid, cid=cid)
+    sql = """SELECT id,level_status,s_json_data,clear_time FROM test WHERE user_id={uid} AND user_book_id={cid}""".format(
+        uid=uid, cid=user_book_id)
     res = fetchall_to_many(db_name, sql, 57)
     return res[0] if res else 0
 
@@ -50,13 +50,13 @@ def get_level_sql(tid, lid, iscurrent=True):
             return sql_4
 
 
-def clear_level(p_id, uid, cid, lid):
+def clear_level(p_id, uid, cid, lid,user_book_id):
     """
     清除当前关卡--逻辑说明：
     更改test表中level_id字段，update_time字段，position 删除该关卡对应的具体详情表中的数据
     """
     db_name = get_db_name(p_id)
-    info = get_test(p_id, uid, cid, lid)
+    info = get_test(p_id, uid, user_book_id)
 
     id = int(info.get('id'))
     l_id = lid - 1 if lid > 1 else 1
@@ -85,14 +85,13 @@ def clear_level(p_id, uid, cid, lid):
         return 0
 
 
-def clear_catalog(p_id, uid, cid, lid):
+def clear_catalog(p_id, uid, cid, lid,user_book_id):
     """"""
     db_name = get_db_name(p_id)
-    info = get_test(p_id, uid, cid, lid)
+    info = get_test(p_id, uid,user_book_id)
     if not info:
         return 0
     id = int(info.get('id'))
-    user_book_id = int(info.get('user_book_id'))
 
     # 更新test表中字段
     sql_1 = """UPDATE test SET user_id=user_id+{n},user_book_id=user_book_id+{n},id=id+{n} WHERE id={id} AND user_book_id={user_book_id}""".format(
@@ -116,10 +115,10 @@ def clear_catalog(p_id, uid, cid, lid):
     return 1
 
 
-def clear_c_l(p_id, uid, c_id, lid):
+def clear_c_l(p_id, uid, c_id, lid,user_book_id):
     """课时--关卡"""
     db_name = get_db_name(p_id)
-    info = get_test(p_id, uid, c_id, lid)
+    info = get_test(p_id, uid,user_book_id)
     if not info:
         return 0
     id = int(info.get('id'))
@@ -149,7 +148,7 @@ def clear_c_l(p_id, uid, c_id, lid):
         return 0
 
 
-def clear_all(p_id, uid, c_id, l_id):
+def clear_all(p_id, uid, c_id, l_id,user_book_id):
     """
     清除所有数据
     优先清除外键数据 最后清理test数据   只清除逻辑数据
@@ -174,8 +173,7 @@ def clear_all(p_id, uid, c_id, l_id):
         UPDATE test SET id=id+1000000,user_id=user_id+1000000,user_book_id=user_book_id+1000000 WHERE id=2969 AND user_book_id=22341
     """
     db_name = get_db_name(p_id)
-    user_book = UserBook.objects.filter(user_id=uid,project_id=p_id).last()
-    user_book_id = user_book.id
+    user_book = UserBook.objects.filter(pk=user_book_id).last()
     # ************清除所有关卡数据
     sql1 = """select id from test where user_id={user_id} and user_book_id={user_book_id}""".format(user_id=uid,user_book_id=user_book_id)
     tids =[int(o.get('id')) for o in fetchall_to_many(db_name,sql1,57)]

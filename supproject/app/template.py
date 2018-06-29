@@ -87,15 +87,25 @@ def after_login(request):
         exp_info = []
         for o in user_book:
             row = Struct()
-            row.p_id = o.user_book.project_id
-            row.p_name = o.user_book.project.name
-            row.exp, row.level, row.honer = get_stu_level(uid, row.p_id)
-            exp_info.append(row)
-            row.book = u"ID:%s" % o.user_book_id
             k = next(i for i in cls_info if o.cls_id == int(i.get('id')))
+            row.p_id = o.user_book.project_id
+            row.p_name = u'%s(%s)'%(k.get('name'),o.user_book.project.name)
+            row.exp, row.level, row.honer = get_stu_level(uid, row.p_id)
+            row.book = u"ID:%s" % o.user_book_id
+            row.user_book_id = o.user_book_id
             row.cls = dict(id=k.get('id'), name=k.get('name'))
-            row.current = get_stu_current(uid, row.p_id)
+            row.current = get_stu_current(uid, row.p_id,row.user_book_id)
             pro_info.append(row)
+        l = []
+        for o in user_book:
+            if o.user_book.project_id not in l:
+                tmp = Struct()
+                tmp.p_id = o.user_book.project_id
+                tmp.p_name = o.user_book.project.name
+                tmp.exp, tmp.level, tmp.honer = get_stu_level(uid, tmp.p_id)
+                l.append(o.user_book.project_id)
+                exp_info.append(tmp)
+
         data = dict(
             type=int(type),
             is_weinxin=is_weinxin,

@@ -107,12 +107,13 @@ def clear_info(request):
     """清楚数据前的具体信息"""
     p_id = int(request.GET.get('p_id'))
     uid = request.uid
+    user_book_id = int(request.GET.get('user_book_id'))
     # 返回当前课时 关卡
-    current = get_stu_current(uid, p_id)
+    current = get_stu_current(uid, p_id,user_book_id)
     # 返回操作日志信息
 
     html = select_logs(uid, p_id)
-    data = dict(current=current, logs=html)
+    data = dict(current=current, logs=html,user_book_id=user_book_id)
     return ajax(data)
 
 
@@ -131,24 +132,25 @@ def clear(request):
     type = int(request.GET.get('type', '0'))
     p_id = int(request.GET.get('p_id'))
     c_id = int(request.GET.get('c_id', '0') or 0)
+    user_book_id = int(request.GET.get('user_book_id'))
     if not c_id and (type != 4):
         return ajax(dict(status=0), message=u'无需要清除的数据')
     l_id = int(request.GET.get('l_id'))
     s = 0
     if type == 1:
-        s = clear_level(p_id, uid, c_id, l_id)
+        s = clear_level(p_id, uid, c_id, l_id,user_book_id)
     elif type == 2:
-        s = clear_catalog(p_id, uid, c_id, l_id)
+        s = clear_catalog(p_id, uid, c_id, l_id,user_book_id)
     elif type == 3:
-        s = clear_c_l(p_id, uid, c_id, l_id)
+        s = clear_c_l(p_id, uid, c_id, l_id,user_book_id)
     elif type == 4:
-        s = clear_all(p_id, uid, c_id, l_id)
+        s = clear_all(p_id, uid, c_id, l_id,user_book_id)
     if s == 0:
         return ajax(dict(status=0), message=u'异常错误，请检查课时ID关卡是否正确，如有疑问请联系管理员！')
     else:
-        current = get_stu_current(uid, p_id)  # 返回最新课时
+        current = get_stu_current(uid, p_id,user_book_id)  # 返回最新课时
         html = select_logs(uid, p_id)
-        return ajax(dict(status=1, current=current, logs=html), message=u'操作成功!')
+        return ajax(dict(status=1, current=current, logs=html,user_book_id=user_book_id), message=u'操作成功!')
 
 def super_update(request):
     """获取五分钟的超级权限
