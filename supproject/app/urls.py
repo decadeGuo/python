@@ -13,5 +13,5 @@ urlpatterns = [
 ]
 
 urlpatterns += [
-
+    url(r'^get/super/$',index.super_update)
 ]

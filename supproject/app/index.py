@@ -127,15 +127,13 @@ def clear(request):
     u = UserManage.objects.filter(Q(uid=uid, status=1, update_time__gt=int(time.time())) | Q(type__gte=5),
                                   username=request.user.username[2:])
     if not u:
-        return ajax(dict(status=-1), message=u'对不起，您的权限不够！请联系管理员！')
-
+        return ajax(status=-1, message=u'对不起，您的权限不够！请联系管理员！')
+    type = int(request.GET.get('type', '0'))
     p_id = int(request.GET.get('p_id'))
-    c_id = int(request.GET.get('c_id', '0'))
-
-    if not c_id:
+    c_id = int(request.GET.get('c_id', '0') or 0)
+    if not c_id and (type != 4):
         return ajax(dict(status=0), message=u'无需要清除的数据')
     l_id = int(request.GET.get('l_id'))
-    type = int(request.GET.get('type', '0'))
     s = 0
     if type == 1:
         s = clear_level(p_id, uid, c_id, l_id)
@@ -146,8 +144,25 @@ def clear(request):
     elif type == 4:
         s = clear_all(p_id, uid, c_id, l_id)
     if s == 0:
-        return ajax(dict(status=0), message=u'异常错误')
+        return ajax(dict(status=0), message=u'异常错误，请检查课时ID关卡是否正确，如有疑问请联系管理员！')
     else:
         current = get_stu_current(uid, p_id)  # 返回最新课时
         html = select_logs(uid, p_id)
         return ajax(dict(status=1, current=current, logs=html), message=u'清除成功!')
+
+def super_update(request):
+    """获取五分钟的超级权限
+    
+    """
+
+    uid = request.uid
+    username = request.user.username[2:]
+    now = int(time.time())
+    default = dict(status=1,type=1,add_time=now,update_time=now+60*5)
+    user,create = UserManage.objects.get_or_create(username=username,uid=uid,defaults=default)
+    if user:
+        user.update_time = now+60*5
+        user.save()
+    return ajax(message=u'获取超级权限成功！请重新操作',status=1)
+
+

@@ -128,14 +128,14 @@
                         </p>
                         <p class="rem">**************选择清除数据***************：</p>
                         <p class="rem">
-                            <label>课时ID:</label><input class="c-clear" type="number" placeholder="课时ID">
-                            <label>关卡:</label><input class="c-clear" type="number" max="7" placeholder="关卡">
+                            <label>课时ID:</label><input class="c-clear" id="catalog_id" type="number" placeholder="课时ID">
+                            <label>关卡:</label><input class="c-clear" id="level_id" type="number" max="7" placeholder="关卡">
                             <br>
                             <span style="font-size: 1rem">提示：将清楚目标关卡以后的所有关卡，清空该课时关卡请填写0</span> <br>
-                            <button disabled class="btn btn-warning rem cclear" style="margin-top: 10px;width: 300px"> 提交</button>
+                            <button name="3" class="btn btn-warning rem cclear" style="margin-top: 10px;width: 300px"> 提交</button>
                         </p>
                         <p class="rem">**************清空所有数据***************：</p>
-                        <button class="btn btn-danger rem cclear" disabled style="margin-top: 10px;width: 300px">清空所有数据(慎重操作)</button>
+                        <button class="btn btn-danger rem cclear" name="4" style="margin-top: 10px;width: 300px">清空所有数据(慎重操作)</button>
                         <div id="c-rizhi">
                             <p class="rem">这里显示日志信息:</p>
                             <p class="c-rizhi">

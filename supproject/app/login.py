@@ -9,7 +9,8 @@ from django.views.decorators.csrf import csrf_exempt
 
 from core.common import Struct, ajax
 from core.router import log
-from models.gg.model import User
+from models.gg.model import User, UserBook
+from supproject.settings import DB_NAME
 
 
 @csrf_exempt
@@ -38,19 +39,11 @@ def auth_login(request):
             user = authenticate(username="js" + username, password=password)  # 验证用户
     if not user:
         return render(request, 'index.html', context=dict(error='用户名或密码错误'))
-    # user_book = UserBook.objects.filter(user_id=user.id, project_id=PROJECT_ID, status__in=[0, 1]).order_by(
-    #     "project_last_update").last()
-    # if not user_book:
-    #     return ajax_fail(message=u"账号未开通该学科!")
-    #
-    # attendance = AttendanceDetail.objects.filter(user_id=user.id, attendance__status=1,
-    #                                              add_time__gt=today()).last()
-    # if not attendance:
-    #     return ajax_fail(error="no_attendance")  # 教师未点名
-    # elif attendance.is_leave == 1:
-    #     return ajax_fail(message="leaveing")  # 请假的不让登录
-
-    # User.objects.filter(pk=user.id).update(login_manner=login_manner)  # 更新登陆方式为super
+    sup_pids = [int(o.get('p_id')) for o in DB_NAME]
+    if type == 2:
+        p_ids = UserBook.objects.filter(user_id=user.id,project_id__in=sup_pids,status__in=[0, 1]).exists()
+        if not p_ids:
+            return render(request, 'index.html', context=dict(error='不支持的项目，请与管理员联系'))
     request.session.flush()  # 清除session缓存
     login(request, user)
     # 设置session过期时间

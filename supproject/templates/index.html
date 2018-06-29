@@ -13,7 +13,7 @@
 </head>
 <body>
 <div style="position:absolute;top: 30px;left: 100px;color: grey">
-    <span id="close" class="btn btn-default">帝王视觉体验</span><br>
+    <span id="close" class="btn btn-default" >帝王视觉体验</span><br>
     <span>功能说明：<br>教师端：提供快速通过培训<br>学生端：自己登陆体验<br>如有报错，纯属正常！</span>
 </div>
 
@@ -64,7 +64,8 @@
             <div class="form-group">
                 <label for="lastname" class="col-sm-2 control-label">密码</label>
                 <div class="col-sm-6">
-                    <input type="password" class="form-control" required name="password" id="lastname" placeholder="请输入密码">
+                    <input type="password" class="form-control" required name="password" id="lastname"
+                           placeholder="请输入密码">
                 </div>
             </div>
             <div class="form-group">
@@ -81,7 +82,8 @@
                     <div class="modal-content">
                         <div class="modal-header">
                             <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                            <h4 class="modal-title" id="myModalLabel"><img src="{% static 'imgs/dashang.png' %}">打赏一下吧！！！<img src="{% static 'imgs/dashang.png' %}"></h4>
+                            <h4 class="modal-title" id="myModalLabel"><img src="{% static 'imgs/dashang.png' %}">打赏一下吧！！！<img
+                                    src="{% static 'imgs/dashang.png' %}"></h4>
                         </div>
                         <div style="text-align: center"><img class="money" src={% static 'imgs/money.png' %} alt="">
                         </div>
@@ -102,9 +104,15 @@
 <script>
     {#$('.guanggao_left,.guanggao_right').css("display","none");#}
     $('#close').click(function () {
-        alert("\n尊贵的VIP会员，即将为您显示帝王视觉");
-        $('.guanggao_left,.guanggao_right').css("display","block");
-        $(this).text('已开启帝王视觉')
+        var type = $('.guanggao_left').css('display');
+        type = type=='none'?'block':'none';
+        var msg = type=='none' ? '已关闭帝王视觉':"已开启帝王视觉";
+        var msg2 = type=='none' ? '\n尊贵的VIP会员，即将为您关闭帝王视觉':"\n尊贵的VIP会员，即将为您显示帝王视觉";
+        alert(msg2);
+        $('.guanggao_left,.guanggao_right').css("display", type);
+        $(this).text(msg)
+
+
     })
 </script>
 </body>

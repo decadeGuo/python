@@ -87,7 +87,9 @@ class UserBook(models.Model):
     book_id = models.IntegerField(u"教材ID", default=0)  # 不同科目教材表不同(同一教材不同type算两本不同教材两条记录)
     status = models.IntegerField(u'状态')  # 1：可用(已缴费)  0:不可用(未交费) 2:交费到期  -1 已删除
     project = models.ForeignKey(Project, verbose_name=u"优佳项目ID", on_delete=models.CASCADE)  # 当前教材所属科目（作为教材的属性，非限制字段）
-
+    start_catalog_id = models.IntegerField()
+    last_catalog_id = models.IntegerField()
+    used_lesson_num = models.IntegerField(default=0)
     class Meta:
         db_table = 'yh_user_book'
 

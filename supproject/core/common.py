@@ -6,10 +6,10 @@ import json
 from supproject.settings import CONFIG_INFO, DB_NAME
 
 
-def ajax(data=None, message=''):
+def ajax(data=None, message='',status=0):
     if not data:
         data = {"status": "ok"}
-    return HttpResponse(json.dumps(dict(data=data, message=message)),content_type=json)
+    return HttpResponse(json.dumps(dict(data=data, message=message,status=status)),content_type=json)
 
 
 class Struct(dict):
@@ -59,8 +59,9 @@ def conn_db(db_name, sql, type,many=False):
     conn = db_base(db_name, type)
     cxn = conn.cursor()
     if many:
-        for o in sql.split(";"):
-            cxn.execute(o.strip())  # 去掉空格
+        for o in sql.split(";")[:-1]:
+            sql = o.strip()
+            cxn.execute(sql)  # 去掉空格
             conn.commit()
     else:
         cxn.execute(sql)
@@ -94,23 +95,25 @@ def get_stu_level(user_id, p_id):
     """获取学生的等级经验"""
     db_name = get_db_name(p_id)
     sql = """SELECT exp FROM `user_extend` WHERE user_id = {user_id};""".format(user_id=user_id)
-    exp = fetchall_to_many(db_name, sql, 57, fetch_one=True)[0]
-    honer, level = exp_to_grade(exp)
-    return exp, level, honer
-
+    exp = fetchall_to_many(db_name, sql, 57, fetch_one=True)
+    if exp:
+        honer, level = exp_to_grade(exp[0])
+        return exp[0], level, honer
+    else:
+        return 0,0,u'无'
 
 def get_stu_current(user_id, p_id):
     """获取学生当前课时"""
     db_name = get_db_name(p_id)
     sql = """SELECT mystic_position FROM user_current_catalog WHERE user_id={uid}""".format(uid=user_id)
-    mystic = fetchall_to_many(db_name, sql, 57, fetch_one=True)[0]
+    mystic = fetchall_to_many(db_name, sql, 57, fetch_one=True)
     if mystic:
-        return dict(c_id=0, level=u'无', c_name=u'神秘关卡')
+        return dict(c_id=0, level=0, c_name=u'神秘关卡')
     sql = """SELECT p.catalog_id,t.level_id FROM test t JOIN user_current_catalog p 
               ON t.user_book_id = p.user_book_id AND p.catalog_id = t.catalog_id WHERE p.user_id={user_id};""".format(user_id=user_id)
     res = fetchall_to_many(db_name,sql,57,fetch_one=True)
     if not res:
-        return dict(c_id=0, level=u'无', c_name=u'无')
+        return dict(c_id=0, level=0, c_name=u'无')
     catalog_id = res[0]
     level_id = res[-1]
 
