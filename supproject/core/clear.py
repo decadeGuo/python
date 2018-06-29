@@ -173,7 +173,6 @@ def clear_all(p_id, uid, c_id, l_id,user_book_id):
         UPDATE test SET id=id+1000000,user_id=user_id+1000000,user_book_id=user_book_id+1000000 WHERE id=2969 AND user_book_id=22341
     """
     db_name = get_db_name(p_id)
-    user_book = UserBook.objects.filter(pk=user_book_id).last()
     # ************清除所有关卡数据
     sql1 = """select id from test where user_id={user_id} and user_book_id={user_book_id}""".format(user_id=uid,user_book_id=user_book_id)
     tids =[int(o.get('id')) for o in fetchall_to_many(db_name,sql1,57)]
@@ -188,7 +187,7 @@ def clear_all(p_id, uid, c_id, l_id,user_book_id):
         time.sleep(0.5)
     except:
         pass
-    print('清除所有关卡数据')
+    # print('清除所有关卡数据')
     # ***********清除学情分析，个性化作业
     try:
         sql3 = """
@@ -220,7 +219,7 @@ def clear_all(p_id, uid, c_id, l_id,user_book_id):
             update analysis set id=id+{n},user_id=user_id+{n},user_book_id=user_book_id+{n} where user_id={user_id} and user_book_id={user_book_id};
             update user_communication set id=id+{n},stu_id=stu_id+{n} where stu_id=stu_id and attendance_detail_id in (select id from attendance_detail where user_id={user_id} and user_book_id={user_book_id});
             update attendance_detail set id=id+{n},user_id=user_id+{n},user_book_id=user_book_id+{n} where user_id={user_id} and user_book_id={user_book_id};
-            UPDATE test SET id=id+{n},user_id=user_id+{n},user_book_id=user_book_id+{n} WHERE id={user_id} AND user_book_id={user_book_id};
+            UPDATE test SET id=id+{n},user_id=user_id+{n},user_book_id=user_book_id+{n} WHERE user_id={user_id} AND user_book_id={user_book_id};
         """.format(n=n,user_id=uid,user_book_id=user_book_id)
         conn_db(db_name, sql5, 57, many=True)
         time.sleep(0.5)
