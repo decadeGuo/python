@@ -17,7 +17,11 @@
     <span>功能说明：<br>教师端：提供快速通过培训<br>学生端：自己登陆体验<br>如有报错，纯属正常！</span>
 </div>
 
-<header id="title"><img src={% static 'imgs/huaji.png' %}>优鸿教育项目辅助工具<img src={% static 'imgs/huaji.png' %}><br>
+<header id="title">
+{#    <img src={% static 'imgs/huaji.png' %}>#}
+    优鸿教育项目辅助工具
+{#    <img src={% static 'imgs/huaji.png' %}>#}
+    <br>
     <span class="auther">作者:GUO Dongbo(内部人员专用)</span> <span class="auther">适用项目：预科以后且有作者参与开发的项目</span>
 
 </header>
@@ -40,7 +44,7 @@
 <div id="content">
     {% block auth %}
         <p class="wenzi">内部身份验证</p>
-        <p class="wenzi">扫描二维码打赏可联系作者获取本站会员<br>会员可免广告可体验额外功能</p>
+{#        <p class="wenzi">扫描二维码打赏可联系作者获取本站会员<br>会员可免广告可体验额外功能</p>#}
         <form class="form-horizontal" role="form" style="margin-left: 150px;margin-top: 80px;"
               method="post" action="/login/">
             {% csrf_token %}
@@ -107,7 +111,7 @@
         var type = $('.guanggao_left').css('display');
         type = type=='none'?'block':'none';
         var msg = type=='none' ? '已关闭帝王视觉':"已开启帝王视觉";
-        var msg2 = type=='none' ? '\n尊贵的VIP会员，即将为您关闭帝王视觉':"\n尊贵的VIP会员，即将为您显示帝王视觉";
+        var msg2 = type=='none' ? '测试功能！\n尊贵的VIP会员，即将为您关闭帝王视觉':"测试功能！\n尊贵的VIP会员，即将为您显示帝王视觉";
         alert(msg2);
         $('.guanggao_left,.guanggao_right').css("display", type);
         $(this).text(msg)

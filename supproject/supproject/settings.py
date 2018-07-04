@@ -39,9 +39,12 @@ ALLOWED_HOSTS = ['*']
 
 # 支持的项目和对应57数据库   57数据库采用sql语句脚本执行
 DB_NAME = [
-    {"p_id": 11, "db_name": "yh_yk_sx2"},
-    {"p_id": 12, "db_name": "yh_yk_wl2"},
-    {"p_id": 13, "db_name": "yh_yk_hx2"}
+    {"p_id": 11, "db_name": "yh_yk_sx2","mark":""},
+    {"p_id": 12, "db_name": "yh_yk_wl2","mark":""},
+    {"p_id": 13, "db_name": "yh_yk_hx2","mark":""},
+    {"p_id": 10, "db_name": "youhong_sx2zzcc","mark":""},
+    {"p_id": 7, "db_name": "youhong_sx2py","mark":""},
+    {"p_id": 8, "db_name": "youhong_sx2zzjx","mark":"zzjx_"},
 ]
 # Application definition
 

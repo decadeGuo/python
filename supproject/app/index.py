@@ -1,11 +1,11 @@
 # coding:utf-8
 import time
-
+import datetime
 from django.db.models import Q
 from django.shortcuts import redirect
 
 from core.clear import clear_level, select_logs, clear_catalog, clear_c_l, clear_all
-from core.common import ajax, fetchall_to_many, conn_db, exp_to_grade, get_stu_current
+from core.common import ajax, fetchall_to_many, conn_db, exp_to_grade, get_stu_current, get_db_name
 from models.gg.model import User, TeacherProject, YhWeixinBind, YhInsideUser
 from models.siyou.model import Clear, UserManage
 from supproject.settings import DB_NAME
@@ -22,6 +22,10 @@ def dudao(request):
     project_id = int(request.GET.get('project_id', '0'))
     type = int(request.GET.get('type', '0'))
     status = 1 if type == 1 else 0
+    if not TeacherProject.objects.filter(user_id=uid, project_id=project_id, status=1).exists():
+        TeacherProject.objects.create(teacher_id=54,user_id=uid,project_id=project_id,status=1,trained=0,trained_time=datetime.datetime.now())
+        return ajax(status=-1,message=u'请先再业务后台获取该科目的督导资格！')
+
     TeacherProject.objects.filter(user_id=uid, project_id=project_id, status=1).update(trained=status)
 
     # print('\t获取督导资格成功！')
@@ -32,7 +36,7 @@ def dudao(request):
     conn_db('yh_edu', sql_1, 57)
     # print('\t完成全部培训！')
 
-    return ajax(dict(status=1))
+    return ajax(status=1)
 
 
 def weixin(request):
@@ -72,10 +76,12 @@ def exp(request):
     if int(type[0]) == 2:
         if exp <= add_exp:
             value = exp if int(type[0]) == 1 else -exp
-    db_name = next(i for i in DB_NAME if int(i.get('p_id')) == p_id).get('db_name')
-    sql = """UPDATE user_extend SET exp=exp+{value} WHERE user_id = {uid}""".format(value=value, uid=uid)
-
-    conn_db(db_name, sql, 57)
+    db_name,mark = get_db_name(p_id)
+    sql = """UPDATE {mark}user_extend SET exp=exp+{value} WHERE user_id = {uid}""".format(value=value, uid=uid,mark=mark)
+    try:
+        conn_db(db_name, sql, 57)
+    except:
+        return ajax(status=-1, message=u'修改失败，可能因为改项目不符合基本业务需求')
     honer, level = exp_to_grade(exp + value)
     data = dict(
         status=1,

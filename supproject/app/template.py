@@ -76,7 +76,7 @@ def after_login(request):
     type = request.session.get('log')
     uid = request.uid
     p_ids = [int(o.get('p_id')) for o in DB_NAME]
-
+    print(p_ids)
     if int(type) == 1:
         is_weinxin = u'已绑定' if YhWeixinBind.objects.filter(user_id=uid, status=1).exists() else u'未绑定'
         is_daan = 1 if YhInsideUser.objects.filter(user_id=uid, status=1).exists() else 0
@@ -85,18 +85,21 @@ def after_login(request):
         cls_info = SchoolClass.objects.filter(pk__in=cls_ids).values("id", "name")
         pro_info = []
         exp_info = []
+        l = [7]
+        pro_info_1 = []
         for o in user_book:
             row = Struct()
             k = next(i for i in cls_info if o.cls_id == int(i.get('id')))
             row.p_id = o.user_book.project_id
             row.p_name = u'%s(%s)'%(k.get('name'),o.user_book.project.name)
+            if o.user_book.project_id not in l:
+                pro_info_1.append(row)
+            row.user_book_id = o.user_book_id
             row.exp, row.level, row.honer = get_stu_level(uid, row.p_id)
             row.book = u"ID:%s" % o.user_book_id
-            row.user_book_id = o.user_book_id
             row.cls = dict(id=k.get('id'), name=k.get('name'))
             row.current = get_stu_current(uid, row.p_id,row.user_book_id)
             pro_info.append(row)
-        l = []
         for o in user_book:
             if o.user_book.project_id not in l:
                 tmp = Struct()
@@ -112,6 +115,7 @@ def after_login(request):
             pro_info=pro_info,
             exp_info=exp_info,
             is_daan=is_daan,
+            pro_info_1=pro_info_1
         )
     else:  # 教师信息
         # 改教师名下所有的班级

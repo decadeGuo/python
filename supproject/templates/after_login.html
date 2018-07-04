@@ -109,7 +109,7 @@
                                 <b class="caret"></b></button>
                             <span class="m-l"><span class="glyphicon glyphicon-hand-left"></span>点击左边按钮查看不同项目</span>
                             <ul class="dropdown-menu" role="menu" aria-labelledby="myTabDrop1">
-                                {% for o in pro_info %}
+                                {% for o in pro_info_1 %}
                                     <li><a href="#" name="{{ o.p_id }}" ubd="{{ o.user_book_id }}" tabindex="-1" data-toggle="tab-2">{{ o.p_name }}</a>
                                     </li>
                                 {% endfor %}
@@ -269,8 +269,13 @@
                     type: "get",
                     data: {"project_id": id, "type": 1},
                     success: function (result) {
-                        alert('恭喜你，培训完成！');
-                        window.location.reload()
+                        if(result.status==1){
+                            alert('恭喜你，培训完成！');
+                            window.location.reload()
+                        }else {
+                            alert(result.message)
+                        }
+
                     }
                 };
                 $.ajax(settings)
@@ -282,8 +287,12 @@
                     type: "get",
                     data: {"project_id": id, "type": 2},
                     success: function (result) {
-                        alert('恭喜你，取消培训完成！');
-                        window.location.reload()
+                        if(result.status==1){
+                            alert('恭喜你，取消培训完成！');
+                            window.location.reload()
+                        }else {
+                            alert(result.message)
+                        }
                     }
                 };
                 $.ajax(settings)

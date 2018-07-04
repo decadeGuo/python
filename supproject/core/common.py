@@ -89,37 +89,45 @@ def fetchall_to_many(db_name, sql, type, fetch_one=False, fetch_all=False):
     conn.close()
     return object_list
 def get_db_name(p_id):
-    return next(i for i in DB_NAME if int(i.get('p_id')) == p_id).get('db_name')
+    db_name = next(i for i in DB_NAME if int(i.get('p_id')) == p_id).get('db_name')
+    mark = next(i for i in DB_NAME if int(i.get('p_id')) == p_id).get('mark')
+    return db_name,mark
 
 def get_stu_level(user_id, p_id):
     """获取学生的等级经验"""
-    db_name = get_db_name(p_id)
-    sql = """SELECT exp FROM `user_extend` WHERE user_id = {user_id};""".format(user_id=user_id)
-    exp = fetchall_to_many(db_name, sql, 57, fetch_one=True)
-    if exp:
-        honer, level = exp_to_grade(exp[0])
-        return exp[0], level, honer
-    else:
+    try:
+        db_name,mark = get_db_name(p_id)
+        sql = """SELECT exp FROM `{mark}user_extend` WHERE user_id = {user_id};""".format(user_id=user_id,mark=mark)
+        exp = fetchall_to_many(db_name, sql, 57, fetch_one=True)
+        if exp:
+            honer, level = exp_to_grade(exp[0])
+            return exp[0], level, honer
+        else:
+            return 0,0,u'无'
+    except:
         return 0,0,u'无'
 
 def get_stu_current(user_id, p_id,user_book_id):
     """获取学生当前课时"""
-    db_name = get_db_name(p_id)
-    sql = """SELECT mystic_position FROM user_current_catalog WHERE user_id={uid} AND user_book_id={user_book_id}""".format(uid=user_id,
-                                                                                                                            user_book_id=user_book_id)
-    mystic = fetchall_to_many(db_name, sql, 57, fetch_one=True)
-    if mystic and mystic[0]:
-        return dict(c_id=0, level=0, c_name=u'神秘关卡')
-    sql = """SELECT p.catalog_id,t.level_id FROM test t JOIN user_current_catalog p 
-              ON t.user_book_id = p.user_book_id AND p.catalog_id = t.catalog_id WHERE p.user_id={user_id} AND 
-              p.user_book_id={user_book_id}""".format(user_id=user_id, user_book_id=user_book_id)
-    res = fetchall_to_many(db_name,sql,57,fetch_one=True)
-    if not res:
-        return dict(c_id=0, level=0, c_name=u'无')
-    catalog_id = res[0]
-    level_id = res[-1]
+    try:
+        db_name,mark = get_db_name(p_id)
+        sql = """SELECT mystic_position FROM {mark}user_current_catalog WHERE user_id={uid} AND user_book_id={user_book_id}""".format(uid=user_id,mark=mark,
+                                                                                                                                user_book_id=user_book_id)
+        mystic = fetchall_to_many(db_name, sql, 57, fetch_one=True)
+        if mystic and mystic[0]:
+            return dict(c_id=0, level=0, c_name=u'神秘关卡')
+        sql = """SELECT p.catalog_id,t.level_id FROM {mark}test t JOIN {mark}user_current_catalog p 
+                  ON t.user_book_id = p.user_book_id AND p.catalog_id = t.catalog_id WHERE p.user_id={user_id} AND 
+                  p.user_book_id={user_book_id}""".format(user_id=user_id, user_book_id=user_book_id,mark=mark)
+        res = fetchall_to_many(db_name,sql,57,fetch_one=True)
+        if not res:
+            return dict(c_id=0, level=0, c_name=u'无')
+        catalog_id = res[0]
+        level_id = res[-1]
 
-    return dict(c_id=catalog_id,level=level_id,c_name=u'ID')
+        return dict(c_id=catalog_id,level=level_id,c_name=u'ID')
+    except:
+        return dict(c_id=0, level=0, c_name=u'ID')
 
 def exp_to_grade(exp):
     """获取等级名称和等级
