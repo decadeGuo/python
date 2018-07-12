@@ -6,7 +6,7 @@ import json
 from supproject.settings import CONFIG_INFO, DB_NAME
 
 
-def ajax(data=None, message='',status=0):
+def ajax(data=None, message='',status=1):
     if not data:
         data = {"status": "ok"}
     return HttpResponse(json.dumps(dict(data=data, message=message,status=status)),content_type=json)

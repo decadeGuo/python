@@ -4,8 +4,8 @@ import time
 from django.db.models import Q
 from django.shortcuts import render
 
-from core.common import Struct, fetchall_to_many, get_stu_level, get_stu_current
-from models.gg.model import UserBookClass, SchoolClass, Project, TeacherProject, YhWeixinBind, YhInsideUser
+from core.common import Struct, fetchall_to_many, get_stu_level, get_stu_current, ajax
+from models.gg.model import UserBookClass, SchoolClass, Project, TeacherProject, YhWeixinBind, YhInsideUser, User
 from models.siyou.model import UserManage
 from supproject.settings import DB_NAME
 
@@ -73,10 +73,11 @@ def after_login(request):
     }
     
     """
-    type = request.session.get('log')
+    vue = request.vue
     uid = request.uid
     p_ids = [int(o.get('p_id')) for o in DB_NAME]
-    print(p_ids)
+    type = int(request.GET.get('radio','2')) if vue else request.session.get('log')
+    username = User.objects.filter(pk=uid).last().username if vue else request.user.username
     if int(type) == 1:
         is_weinxin = u'已绑定' if YhWeixinBind.objects.filter(user_id=uid, status=1).exists() else u'未绑定'
         is_daan = 1 if YhInsideUser.objects.filter(user_id=uid, status=1).exists() else 0
@@ -85,11 +86,13 @@ def after_login(request):
         cls_info = SchoolClass.objects.filter(pk__in=cls_ids).values("id", "name")
         pro_info = []
         exp_info = []
-        l = [7]
+        l = [7] # 重复的项目
         pro_info_1 = []
         for o in user_book:
             row = Struct()
-            k = next(i for i in cls_info if o.cls_id == int(i.get('id')))
+            k = next((i for i in cls_info if o.cls_id == int(i.get('id'))),None)
+            if not k:
+                continue
             row.p_id = o.user_book.project_id
             row.p_name = u'%s(%s)'%(k.get('name'),o.user_book.project.name)
             if o.user_book.project_id not in l:
@@ -119,7 +122,7 @@ def after_login(request):
         )
     else:  # 教师信息
         # 改教师名下所有的班级
-        cls_ids = UserBookClass.objects.filter(user_id=uid, user_type=type).values_list("cls_id", flat=True)
+        cls_ids = UserBookClass.objects.filter(user_id=uid).values_list("cls_id", flat=True)
         cls_info = SchoolClass.objects.filter(pk__in=cls_ids).values("id", "name")
         all_project = Project.objects.filter(id__in=p_ids).values("id", "name").order_by("id")
         pro_info = []
@@ -130,8 +133,7 @@ def after_login(request):
             row.project_id = int(o.get('id'))
             row.project_name = o.get('name')
             # 判断是否具有督导资格是是否完成全部培训
-
-            if is_already(request.user.username[2:], uid, row.project_id):
+            if is_already(username[2:], uid, row.project_id):
                 row.status = 1
                 already_pass.append(row.project_id)
                 already_info.append(row)
@@ -141,11 +143,18 @@ def after_login(request):
         all_p_id = [int(o.get('id')) for o in all_project.exclude(id__in=already_pass)]
         need = all_project.filter(id__in=all_p_id)
         data = dict(
+            cls_info = [dict(id=o.get('id'),name=o.get('name')) for o in cls_info],
+            pro_info=pro_info,
+            need=[dict(id=o.get('id'),name=o.get('name')) for o in need],
+            already_info=already_info
+        ) if vue else dict(
             type=int(type),
             cls_info=cls_info,
             pro_info=pro_info,
             need=need,
             already_info=already_info,
         )
-
-    return render(request, 'after_login.html', context=data)
+    if vue:
+        return ajax(data)
+    else:
+        return render(request, 'after_login.html', context=data)

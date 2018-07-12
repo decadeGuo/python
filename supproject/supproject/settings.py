@@ -45,6 +45,8 @@ DB_NAME = [
     {"p_id": 10, "db_name": "youhong_sx2zzcc","mark":""},
     {"p_id": 7, "db_name": "youhong_sx2py","mark":""},
     {"p_id": 8, "db_name": "youhong_sx2zzjx","mark":"zzjx_"},
+    {"p_id": 9, "db_name": "youhong_sx3","mark":""},
+    {"p_id": 2, "db_name": "youhong_px","mark":""},
 ]
 # Application definition
 

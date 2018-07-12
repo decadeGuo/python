@@ -18,9 +18,12 @@ def dudao(request):
     :return:
     """
     uid = request.uid
-    username = request.user.username[2:]
+    username = User.objects.filter(pk=uid).last().username[2:] if request.vue else request.user.username[2:]
     project_id = int(request.GET.get('project_id', '0'))
-    type = int(request.GET.get('type', '0'))
+    if request.vue:
+        type = int(request.GET.get('lx', '0'))
+    else:
+        type = int(request.GET.get('type', '0'))    # 获得资格和取消资格
     status = 1 if type == 1 else 0
     if not TeacherProject.objects.filter(user_id=uid, project_id=project_id, status=1).exists():
         TeacherProject.objects.create(teacher_id=54,user_id=uid,project_id=project_id,status=1,trained=0,trained_time=datetime.datetime.now())
@@ -36,7 +39,7 @@ def dudao(request):
     conn_db('yh_edu', sql_1, 57)
     # print('\t完成全部培训！')
 
-    return ajax(status=1)
+    return ajax()
 
 
 def weixin(request):
@@ -174,3 +177,5 @@ def super_update(request):
     return ajax(message=u'获取超级权限成功！请重新操作',status=1)
 
 
+def vuetest(request):
+    return ajax(dict(name=u'郭东波',message=u'测试接口'))
