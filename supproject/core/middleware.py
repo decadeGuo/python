@@ -61,9 +61,10 @@ class AuthenticationMiddleware(MiddlewareMixin):
                 else:
                     uid = request.GET.get("uid") or 0
             request.uid = uid
+            # return ajax(status=0, message='会话过期请重新登录')
             if not uid:
                 if vue:
-                    return ajax(status=0,message='会话过期请重新登录')
+                    return ajax(status=2,message='会话过期请重新登录')
                 else:
                     request.session["log"] = u'会话过期重新登录'
                 return redirect('/')

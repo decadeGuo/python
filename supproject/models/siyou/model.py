@@ -9,6 +9,7 @@ class Clear(models.Model):
     l_id = models.IntegerField(default=0)
     explain = models.CharField(max_length=200)
     add_time = models.IntegerField(default=0)
+    type = models.IntegerField(default=0) # 0 清空数据 1 答案权限 2督导资格 3微信
     class Meta:
         db_table = 'yh_clear'
 

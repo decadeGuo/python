@@ -15,6 +15,7 @@ Including another URLconf
 """
 from django.conf.urls import url, include
 from django.contrib import admin
+
 from app import login, template,index
 # import settings
 # from settings import MEDIA_SITE
@@ -25,6 +26,7 @@ urlpatterns = [
     # url(r'^admin/', admin.site.urls),
     url(r'^$', template.index),
     url(r'^update/', include('app.urls')),
+    url(r'vue/',include('vue.urls'))
     # url(r'^static/(?P<path>.*)$', serve, {'document_root': MEDIA_SITE}),
 ]
 

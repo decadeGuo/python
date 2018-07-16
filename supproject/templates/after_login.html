@@ -19,7 +19,7 @@
                     <p><span class="rem">是否绑定微信：<span class="tishi">{{ is_weinxin }}</span></span></p>
                     {% if is_daan %}
                         <p><span class="rem">是否有答案权限：<span class="tishi">有</span></span>
-                            <a href="/update/answer?type=2" class="btn btn-primary m-l" style="padding: 5px">取消答案</a>
+                            <a href="/update/answer?type=0" class="btn btn-primary m-l" style="padding: 5px">取消答案</a>
                         </p>
                     {% else %}
                         <p><span class="rem">是否有答案权限：<span class="tishi">无</span></span>
@@ -181,7 +181,7 @@
                     data: {"type": type, "openid": str},
                     success: function (data) {
                         alert(data.message);
-                        if (data.data.status == 1) {
+                        if (data.status == 1) {
                             window.location.reload()
                         }
                     }

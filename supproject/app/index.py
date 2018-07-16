@@ -39,6 +39,9 @@ def dudao(request):
     conn_db('yh_edu', sql_1, 57)
     # print('\t完成全部培训！')
 
+    time1 = time.strftime('%m/%d %H:%M:%S', time.localtime(int(time.time())))
+    main = u'您于%s%s了教师端%s督导资格' % (time1, u'获取了' if type else u'取消了',project_id)
+    Clear.objects.create(uid=uid, explain=main, type=2, add_time=int(time.time()),p_id=project_id)
     return ajax()
 
 
@@ -49,23 +52,28 @@ def weixin(request):
     type = int(request.GET.get('type', '0'))
     user_weixin = YhWeixinBind.objects.filter(user_id=uid).last()
     if not openid and not user_weixin:
-        return ajax(message=u'openid不能为空哦！')
+        message=u'openid不能为空哦！';status=0
+        return ajax(message=message, status=status)
     if type == 2:
         if user_weixin and user_weixin.status == 1:
-            return ajax(message=u'你已绑定过微信')
+            message=u'你已绑定过微信';status=0
         elif user_weixin:
             YhWeixinBind.objects.filter(user_id=uid).update(status=1)
-            return ajax(dict(status=1), message=u'绑定成功！')
+            status=1;message=u'绑定成功！'
         else:
             YhWeixinBind.objects.create(user_id=uid, openid=openid, status=1, add_time=int(time.time()))
-            return ajax(dict(status=1), message=u'绑定成功！')
+            status = 1;message = u'绑定成功！'
     else:
         if user_weixin and user_weixin.status == 1:
             YhWeixinBind.objects.filter(user_id=uid).update(status=-1)
-            return ajax(dict(status=1), message=u'解绑成功！')
+            status=1; message=u'解绑成功！'
         else:
-            return ajax(message=u'你还没绑定微信，赶紧绑定吧！')
-
+            message=u'你还没绑定微信，赶紧绑定吧！';status=0
+    if status == 1:
+        time1 = time.strftime('%m/%d %H:%M:%S', time.localtime(int(time.time())))
+        main = u'您于%s%s了学生端微信' % (time1, u'绑定了' if type==2 else u'解绑了')
+        Clear.objects.create(uid=uid, explain=main, type=3, add_time=int(time.time()))
+    return ajax(message=message,status=status)
 
 def exp(request):
     """修改经验"""
@@ -99,9 +107,9 @@ def exp(request):
 def daan(request):
     """答案权限"""
     uid = request.uid
-    type = int(request.GET.get('type', '1'))
+    type = int(request.GET.get('type'))
     info = YhInsideUser.objects.filter(user_id=uid)
-    if type == 1:
+    if type :
         if info:
             YhInsideUser.objects.filter(user_id=uid).update(status=1)
         else:
@@ -109,8 +117,10 @@ def daan(request):
     else:
         YhInsideUser.objects.filter(user_id=uid).update(status=0)
 
-    return redirect('/index/')
-
+    time1 = time.strftime('%m/%d %H:%M:%S', time.localtime(int(time.time())))
+    main = u'您于%s%s了学生端答案权限' % (time1,u'获取了' if type else u'取消了')
+    Clear.objects.create(uid=uid, explain=main,type=1, add_time=int(time.time()))
+    return ajax() if request.vue else redirect('/index/')
 
 def clear_info(request):
     """清楚数据前的具体信息"""

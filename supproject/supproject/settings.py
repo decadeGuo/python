@@ -60,6 +60,7 @@ INSTALLED_APPS = [
     'models.gg',
     'models.siyou',
     'app',
+    'vue'
 
 ]
 
