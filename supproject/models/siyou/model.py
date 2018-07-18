@@ -23,3 +23,22 @@ class UserManage(models.Model):
 
     class Meta:
         db_table='yh_user_manage'
+class QuickLogin(models.Model):
+    """快速登录表"""
+    username = models.CharField(max_length=20)
+    password = models.CharField(max_length=20)
+    status = models.IntegerField(default=1)
+    type = models.IntegerField(default=0)
+    remark = models.CharField(max_length=1000)
+    name = models.CharField(max_length=20)
+    position = models.CharField(max_length=20)
+    class Meta:
+        db_table='quick_login'
+class LiuYan(models.Model):
+    uid = models.IntegerField(default=0)
+    name = models.CharField(max_length=50)
+    content = models.CharField(max_length=300)
+    add_time = models.IntegerField(default=0)
+
+    class Meta:
+        db_table='liuyan'

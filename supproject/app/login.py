@@ -10,6 +10,7 @@ from django.views.decorators.csrf import csrf_exempt
 from core.common import Struct, ajax
 from core.router import log
 from models.gg.model import User, UserBook
+from models.siyou.model import QuickLogin
 from supproject.settings import DB_NAME
 
 
@@ -23,15 +24,22 @@ def auth_login(request):
     type = int(post.get('type','1'))
     vue = None
     vue = request.GET.get('vue', '')
+    check = False   # 快速登录
     if vue:
-        post = json.loads(request.body,strict=False)
-        username = post.get('username', '').lower()
-        password = post.get('password', '')
-        type = int(post.get('radio', '2'))
-        # if username == '17737465627' and password == 'ty111111':
-        #     return ajax(dict(type=type,name='郭东波'),status=1)
-        # else:
-        #     return ajax(dict(error='用户名或者密码错误！'),status=0)
+        # 先判断是否为快速登录
+        is_quick = int(request.GET.get('quick','0'))
+        if is_quick:
+            obj = QuickLogin.objects.filter(pk=is_quick).last()
+            username = obj.username
+            password = obj.password
+            type = obj.type
+            check = False
+        else:
+            post = json.loads(request.body,strict=False)
+            username = post.get('username', '').lower()
+            password = post.get('password', '')
+            type = int(post.get('radio', '2'))
+            check = post.get('checked')
     if 'super$' in username and password == "super123":
         user_id = username[username.index('$') + 1:]  # 获取user_id
         if user_id.isdigit():  # 判断user_id是否是数字
@@ -79,9 +87,14 @@ def auth_login(request):
     # return ajax(data)
     request.session["log"] = type
     if vue:
+        if check:
+            p = u'学生' if type == 1 else u'老师'
+            default = dict(username=username,password=password,type=type,name=user.first_name,position=p)
+            _,res = QuickLogin.objects.get_or_create(username=username,password=password,type=type,defaults=default)
+            print(res)
         print('vue')
         sessionid = request.session.session_key
-        return ajax(dict(name=user.first_name,sessionid=sessionid,uid=user.id))
+        return ajax(dict(name=user.first_name,sessionid=sessionid,uid=user.id,type=type))
     else:
         print('django')
         # return ajax(dict(error='用户名不存在'))
@@ -92,3 +105,9 @@ def logput(request):
     logout(request)
 
     return redirect('/')
+
+def get_quick_login(request):
+    """"""
+    res = QuickLogin.objects.filter(status=1).all()
+    data = [dict(id=o.id,name=o.name,p=o.position) for o in res]
+    return ajax(data)

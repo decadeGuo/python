@@ -1,9 +1,6 @@
 # coding=utf-8
-from aliyunsdkcore import client
-from aliyunsdkcr.request.v20160607 import GetImageLayerRequest, DeleteNamespaceRequest, CreateNamespaceRequest, \
-    GetNamespaceListRequest, GetNamespaceRequest, GetRepoListRequest, GetRepoTagsRequest
-import json
 
+import random
 # 设置Client
 # client.region_provider.add_endpoint("cr", "cn-beijing", "cr.cn-beijing.aliyuncs.com")
 # apiClient = client.AcsClient('LTAILPtWDD74MNzv', 'ivWRuqRoCJAAnnUUSvoHNGWZJwAIGc', 'cn-beijing')
@@ -23,13 +20,15 @@ import json
 # request.set_RepoNamespace('uhongedu')
 # response = apiClient.do_action(request)
 # print(json.loads(response))
-a = """
-       UPDATE knowledge_study SET id=id+1000000,test_id=test_id+1000000 WHERE test_id in (85,86,160);
-       UPDATE method_study SET id=id+1000000,test_id=test_id+1000000 WHERE test_id in (85,86,160);
-       UPDATE example_study SET id=id+1000000,test_id=test_id+1000000 WHERE test_id in (85,86,160);
-       UPDATE apply_test SET id=id+1000000,test_id=test_id+1000000 WHERE test_id in (85,86,160);"""
-print(a.split(";"))
-for o in a.split(";")[:-1]:
-    if o != '\n':
-        print('>>>>>>>>',o.strip())
+# l = int(request.GET.get('l','1'))
+n = 10
+ziyuan = [(u'赢',u'羸'),(u'未',u'末'),(u'暧',u'暖'),(u'肓',u'盲'),(u'夭',u'天')]
+obj = random.choice(ziyuan)
+grx = list(obj[0]*n)
+right = obj[-1]
+m = random.randint(1,n)
 
+grx[m-1] = right
+
+
+print ''.join(grx),len(grx),grx.index(right)+1

@@ -78,7 +78,10 @@ def after_login(request):
     p_ids = [int(o.get('p_id')) for o in DB_NAME]
     type = int(request.GET.get('radio','2')) if vue else request.session.get('log')
     username = User.objects.filter(pk=uid).last().username if vue else request.user.username
+
     if int(type) == 1:
+        freeall = Project.objects.filter(pk__in=p_ids).all()
+        free = [dict(un=o.unbind_free_num, al=o.free_num,p=o.name) for o in freeall]
         is_weinxin = u'已绑定' if YhWeixinBind.objects.filter(user_id=uid, status=1).exists() else u'未绑定'
         is_daan = 1 if YhInsideUser.objects.filter(user_id=uid, status=1).exists() else 0
         user_book = UserBookClass.objects.filter(user_id=uid, user_book__project_id__in=p_ids)
@@ -118,7 +121,8 @@ def after_login(request):
             pro_info=pro_info,
             exp_info=exp_info,
             is_daan=is_daan,
-            pro_info_1=pro_info_1
+            pro_info_1=pro_info_1,
+            free=free
         )
     else:  # 教师信息
         # 改教师名下所有的班级

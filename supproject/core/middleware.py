@@ -9,7 +9,7 @@ from django.utils.deprecation import MiddlewareMixin
 
 from core.common import ajax
 from core.router import log
-nologin_urls = ["/","/logout/","/login/","/vue/test/"]
+nologin_urls = ["/","/logout/","/login/","/vue/test/","/get/quick/"]
 
 class AuthenticationMiddleware(MiddlewareMixin):
     """"""
@@ -31,7 +31,7 @@ class AuthenticationMiddleware(MiddlewareMixin):
         # if not settings.DEBUG:
         #     return None
         if request.method == 'OPTIONS':
-            return HttpResponse()
+            return ajax()
         path = str(request.path)
         # 如果请求的路径为 js css 文件 不处理
         if path.startswith('/static/'):

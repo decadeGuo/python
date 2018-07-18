@@ -6,7 +6,7 @@ from django.shortcuts import redirect
 
 from core.clear import clear_level, select_logs, clear_catalog, clear_c_l, clear_all
 from core.common import ajax, fetchall_to_many, conn_db, exp_to_grade, get_stu_current, get_db_name
-from models.gg.model import User, TeacherProject, YhWeixinBind, YhInsideUser
+from models.gg.model import User, TeacherProject, YhWeixinBind, YhInsideUser, Project
 from models.siyou.model import Clear, UserManage
 from supproject.settings import DB_NAME
 
@@ -40,7 +40,8 @@ def dudao(request):
     # print('\t完成全部培训！')
 
     time1 = time.strftime('%m/%d %H:%M:%S', time.localtime(int(time.time())))
-    main = u'您于%s%s了教师端%s督导资格' % (time1, u'获取了' if type else u'取消了',project_id)
+    name = Project.objects.filter(pk=project_id).last().name
+    main = u'您于%s%s了教师端%s督导资格----2' % (time1, u'获取' if type==1 else u'取消',name)
     Clear.objects.create(uid=uid, explain=main, type=2, add_time=int(time.time()),p_id=project_id)
     return ajax()
 
@@ -71,7 +72,7 @@ def weixin(request):
             message=u'你还没绑定微信，赶紧绑定吧！';status=0
     if status == 1:
         time1 = time.strftime('%m/%d %H:%M:%S', time.localtime(int(time.time())))
-        main = u'您于%s%s了学生端微信' % (time1, u'绑定了' if type==2 else u'解绑了')
+        main = u'您于%s%s了学生端微信----3' % (time1, u'绑定' if type==2 else u'解绑')
         Clear.objects.create(uid=uid, explain=main, type=3, add_time=int(time.time()))
     return ajax(message=message,status=status)
 
@@ -118,7 +119,7 @@ def daan(request):
         YhInsideUser.objects.filter(user_id=uid).update(status=0)
 
     time1 = time.strftime('%m/%d %H:%M:%S', time.localtime(int(time.time())))
-    main = u'您于%s%s了学生端答案权限' % (time1,u'获取了' if type else u'取消了')
+    main = u'您于%s%s了学生端答案权限----1' % (time1,u'获取' if type else u'取消')
     Clear.objects.create(uid=uid, explain=main,type=1, add_time=int(time.time()))
     return ajax() if request.vue else redirect('/index/')
 

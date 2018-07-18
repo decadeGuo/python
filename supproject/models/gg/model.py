@@ -14,7 +14,7 @@ class Project(models.Model):
     subject_id = models.IntegerField(u'科目编号')
     status = models.IntegerField(u'启用状态')  # 0 未启用  1 以启用
     free_num = models.IntegerField(u"免费课时")
-
+    unbind_free_num = models.IntegerField(u'未绑微信的免费课时')
     class Meta:
         db_table = 'yh_project'
 

@@ -33,6 +33,7 @@ urlpatterns = [
 urlpatterns += [
     url(r'^login/$', login.auth_login),
     url(r'^logout/$', login.logput),
+    url(r'^get/quick/$',login.get_quick_login)
 ]
 urlpatterns += [
     url(r'index/$', template.after_login),
