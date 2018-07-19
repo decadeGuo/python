@@ -42,3 +42,14 @@ class LiuYan(models.Model):
 
     class Meta:
         db_table='liuyan'
+class Game(models.Model):
+    """游戏记录"""
+    type = models.IntegerField(default=0) # 1 火眼金睛
+    uid = models.IntegerField(default=0)
+    time = models.IntegerField(default=0) # 游戏用时
+    dw = models.CharField(max_length=500)
+    add_time = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        db_table='game'
+

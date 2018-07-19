@@ -6,7 +6,7 @@ from django.views.decorators.csrf import csrf_exempt
 
 from core.common import ajax
 from models.gg.model import YhWeixinBind, YhInsideUser, User
-from models.siyou.model import Clear, LiuYan
+from models.siyou.model import Clear, LiuYan, Game
 import time
 
 def get_info(request):
@@ -30,7 +30,11 @@ def liuyan(request):
     now = int(time.time())
     LiuYan.objects.create(uid=uid,name=name,content=content,add_time=now)
     return ajax()
+def get_game_log(uid):
+    res = Game.objects.filter(uid=uid, type=1).last()
+    jilu = json.loads(res.dw) if res else []
 
+    return jilu
 def game(request):
     """"""
     ziyuan = [(u'赢', u'羸'), (u'未', u'末'), (u'暧', u'暖'), (u'肓', u'盲'), (u'夭', u'天')]
@@ -46,31 +50,49 @@ def game(request):
     m = random.randint(1, n)
     grx[m - 1] = right
     num = grx.index(right)  # 正确答案的位置
-    return ajax(dict(c=grx,n=num,al=n,l=int(l)+1))
+
+    jilu = get_game_log(request.uid)
+
+    return ajax(dict(c=grx,n=num,al=n,l=int(l)+1,jilu=jilu))
 
 def game_res(request):
     """"""
-    dw = {"1": u"☆最强王者☆", "2": u"☆超凡大师☆",
-          "3": u"☆璀璨砖石☆", "4": u"☆华贵铂金☆", "5": u"●荣耀黄金●", "6": u"●不屈白银●", "7": u"英勇黄铜", "8": u"垃圾塑料"}
+    dw = {"1": "☆最强王者☆", "2": "☆超凡大师☆",
+          "3": "☆璀璨砖石☆", "4": "☆华贵铂金☆", "5": "●荣耀黄金●", "6": "●不屈白银●", "7": "英勇黄铜", "8": "垃圾塑料"}
 
     time = int(request.GET.get('time','100'))  # 时间
-    if time <= 5:
+    l = int(request.GET.get('l','1'))
+    if time <= 1:
         score = dw["1"]
-    elif time <= 10:
+    elif time <= 3:
         score = dw["2"]
-    elif time <= 30:
+    elif time <= 7:
         score = dw["3"]
-    elif time <= 40:
+    elif time <= 12:
         score = dw["4"]
-    elif time <= 55:
+    elif time <= 18:
         score = dw["5"]
-    elif time <= 60:
+    elif time <= 30:
         score = dw["6"]
-    elif time <= 65:
+    elif time <= 50:
         score = dw["7"]
     else:
         score = dw["8"]
+    current = {"lv":"lv%s"%l,"dw":score,"time":time}
+    res = Game.objects.filter(uid=request.uid, type=1).last()
+    if not res:
+        res = Game.objects.create(uid=request.uid,type=1,time=0,dw=json.dumps([]))
+    data = json.loads(res.dw)
+    cur = next((k for k in data if k.get('lv') == "lv%s"%l),None)
+    if cur:
+        if int(cur["time"] > time):
+            cur["time"] = time
+            cur["dw"] = score
+    else:
+        data.append(current)
+    Game.objects.filter(uid=request.uid, type=1).update(dw=json.dumps(data))
 
-    return ajax(dict(score=score,time=time))
+    jilu = get_game_log(request.uid)
+    return ajax(dict(score=score,time=time,jilu=jilu))
 
 
